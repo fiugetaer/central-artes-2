@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Central de Artes GACC</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Se já houver sessão ativa, vai direto ao dashboard -->
+<script>
+(async () => {
+    // Aguarda o supabase carregar antes de checar sessão
+    // (os scripts externos carregam no final do body)
+})();
+</script>
+
+<div class="login-container">
+    <div class="login-card">
+
+        <div class="login-logo">
+            <div class="logo-circle"></div>
+            <div>
+                <h2>GACC Amazonas</h2>
+                <span>Central de Artes</span>
+            </div>
+        </div>
+
+        <h1>Acesso ao Painel</h1>
+        <p>Restrito à equipe de comunicação e design.</p>
+
+        <input type="email" id="email" placeholder="E-mail institucional" autocomplete="email">
+        <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
+
+        <p id="msgErro" class="login-erro"></p>
+
+        <button id="btnLogin">Entrar</button>
+
+        <a href="index.html" class="login-voltar">← Voltar para o início</a>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="script.js"></script>
+
+<script>
+// Redireciona se já estiver logado
+(async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) window.location.href = "dashboard.html";
+})();
+</script>
+
+</body>
+</html>

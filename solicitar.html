@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Arte | Central de Artes GACC</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a href="index.html" class="voltar">
+        ← Voltar
+    </a>
+
+    <div class="titulo-topo">
+        Central de Artes — GACC
+    </div>
+
+</header>
+
+<section class="form-section">
+
+    <div class="form-container">
+
+        <h1>Briefing da Solicitação</h1>
+
+        <p>
+            Quanto mais claras forem as informações, melhor será o resultado da sua peça.
+        </p>
+
+        <!-- DADOS DO SOLICITANTE -->
+
+        <div class="card">
+
+            <h2>Dados do Solicitante</h2>
+
+            <div class="grid-2">
+
+                <div class="campo">
+                    <label>Nome</label>
+                    <input type="text" id="nome">
+                </div>
+
+                <div class="campo">
+                    <label>Setor</label>
+                    <input type="text" id="setor">
+                </div>
+
+                <div class="campo">
+                    <label>WhatsApp</label>
+                    <input type="tel" id="whatsapp" placeholder="(92) 99999-9999">
+                </div>
+
+                <div class="campo">
+                    <label>E-mail</label>
+                    <input type="email" id="emailSolicitante" placeholder="email@gaccam.org.br">
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- SOBRE A ARTE -->
+
+        <div class="card">
+
+            <h2>Informações da Arte</h2>
+
+            <div class="grid-2">
+
+                <div class="campo">
+
+                    <label>Tipo da Peça</label>
+
+                    <select id="tipoPeca">
+                        <option>Selecione</option>
+                        <option>Post Instagram</option>
+                        <option>Story Instagram</option>
+                        <option>Carrossel</option>
+                        <option>Banner</option>
+                        <option>Cartaz</option>
+                        <option>Flyer</option>
+                        <option>Vídeo</option>
+                        <option>Apresentação</option>
+                    </select>
+
+                </div>
+
+                <div class="campo">
+                    <label>Campanha (Opcional)</label>
+                    <input type="text" id="campanha" placeholder="Nome da campanha">
+                </div>
+
+            </div>
+
+            <div class="campo">
+
+                <label>Objetivo da Arte</label>
+
+                <textarea
+                    id="objetivo"
+                    rows="5"
+                    placeholder="O que você deseja comunicar?"
+                ></textarea>
+
+            </div>
+
+            <div class="campo">
+
+                <label>Texto Obrigatório</label>
+
+                <textarea
+                    id="textoObrigatorio"
+                    rows="5"
+                    placeholder="Texto que deve aparecer na peça"
+                ></textarea>
+
+            </div>
+
+            <div class="campo">
+
+                <label>Público-Alvo</label>
+
+                <input
+                    type="text"
+                    id="publicoAlvo"
+                    placeholder="Ex.: Doadores, colaboradores, voluntários"
+                >
+
+            </div>
+
+        </div>
+
+        <!-- PRAZO -->
+
+        <div class="card">
+
+            <h2>Prazo</h2>
+
+            <div class="grid-2">
+
+                <div class="campo">
+
+                    <label>Data Desejada</label>
+
+                    <input
+                        type="date"
+                        id="dataEntrega"
+                    >
+
+                </div>
+
+                <div class="campo">
+
+                    <label>Prioridade</label>
+
+                    <select id="prioridade">
+                        <option>Baixa</option>
+                        <option>Média</option>
+                        <option>Alta</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- REFERÊNCIAS -->
+
+        <div class="card">
+
+            <h2>Referências</h2>
+
+            <div class="campo">
+
+                <label>Enviar Arquivo de Referência</label>
+
+                <div id="areaUpload" style="
+                    border: 2px dashed #c8d8d6;
+                    border-radius: 14px;
+                    padding: 28px 20px;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: border-color .2s, background .2s;
+                    background: #fafafa;
+                ">
+                    <div id="uploadIcone" style="font-size: 32px; margin-bottom: 8px;">📎</div>
+                    <div id="uploadTexto" style="color: #637381; font-size: 14px;">
+                        Clique para selecionar ou arraste o arquivo aqui<br>
+                        <span style="font-size: 12px; color: #aaa;">Imagens (JPG, PNG, GIF) ou Vídeos (MP4, MOV) — máx. 50MB</span>
+                    </div>
+                    <input
+                        type="file"
+                        id="arquivoReferencia"
+                        accept="image/*,video/*"
+                        style="display:none;"
+                    >
+                </div>
+
+                <!-- Preview do arquivo selecionado -->
+                <div id="previewArquivo" style="display:none; margin-top: 12px;"></div>
+
+            </div>
+
+            <div class="campo">
+
+                <label>Link de Referência</label>
+
+                <input
+                    type="url"
+                    id="linkReferencia"
+                    placeholder="https://"
+                >
+
+            </div>
+
+        </div>
+
+        <!-- OBSERVAÇÕES -->
+
+        <div class="card">
+
+            <h2>Observações Finais</h2>
+
+            <div class="campo">
+
+                <textarea
+                    id="observacoes"
+                    rows="6"
+                    placeholder="Informações adicionais"
+                ></textarea>
+
+            </div>
+
+        </div>
+
+        <!-- BOTÃO -->
+
+        <div class="acoes">
+
+            <button
+                type="button"
+                id="btnEnviar"
+                class="btn-primary"
+            >
+                Enviar Solicitação
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="script.js"></script>
+
+<script>
+// ── Lógica de upload visual (só no solicitar.html) ──
+
+const areaUpload   = document.getElementById("areaUpload");
+const inputArquivo = document.getElementById("arquivoReferencia");
+const previewEl    = document.getElementById("previewArquivo");
+
+// Clique na área abre o seletor de arquivo
+areaUpload.addEventListener("click", () => inputArquivo.click());
+
+// Arrasta arquivo para a área
+areaUpload.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    areaUpload.style.borderColor = "#007c80";
+    areaUpload.style.background  = "#eaf4f2";
+});
+
+areaUpload.addEventListener("dragleave", () => {
+    areaUpload.style.borderColor = "#c8d8d6";
+    areaUpload.style.background  = "#fafafa";
+});
+
+areaUpload.addEventListener("drop", (e) => {
+    e.preventDefault();
+    areaUpload.style.borderColor = "#c8d8d6";
+    areaUpload.style.background  = "#fafafa";
+    if (e.dataTransfer.files.length > 0) {
+        inputArquivo.files = e.dataTransfer.files;
+        mostrarPreview(e.dataTransfer.files[0]);
+    }
+});
+
+// Arquivo selecionado pelo seletor
+inputArquivo.addEventListener("change", () => {
+    if (inputArquivo.files.length > 0) {
+        mostrarPreview(inputArquivo.files[0]);
+    }
+});
+
+function mostrarPreview(arquivo) {
+    const nomeEl = document.getElementById("uploadTexto");
+    const iconeEl = document.getElementById("uploadIcone");
+
+    // Atualiza o texto da área
+    iconeEl.textContent = arquivo.type.startsWith("video/") ? "🎬" : "🖼️";
+    nomeEl.innerHTML = `<strong style="color:#007c80;">${arquivo.name}</strong><br>
+        <span style="font-size:12px;color:#aaa;">${(arquivo.size / 1024 / 1024).toFixed(2)} MB · Clique para trocar</span>`;
+
+    // Mostra preview visual se for imagem
+    previewEl.style.display = "block";
+    previewEl.innerHTML = "";
+
+    if (arquivo.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewEl.innerHTML = `<img src="${e.target.result}" style="
+                max-width:100%; max-height:200px; border-radius:12px;
+                border:1px solid #dce6e4; object-fit:cover;">`;
+        };
+        reader.readAsDataURL(arquivo);
+    } else if (arquivo.type.startsWith("video/")) {
+        const url = URL.createObjectURL(arquivo);
+        previewEl.innerHTML = `<video src="${url}" controls style="
+            max-width:100%; max-height:200px; border-radius:12px;
+            border:1px solid #dce6e4;"></video>`;
+    }
+}
+</script>
+
+</body>
+</html>

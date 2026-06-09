@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Esta meta tag ativa a proteção de rota real no script.js -->
+    <meta name="pagina-protegida" content="true">
+    <title>Dashboard | Central de Artes</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Linha da tabela clicável */
+        #tabelaCorpo tr:hover { background: #f0f9f8; }
+        tr[style*="cursor"] td { transition: background .15s; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-circle"></div>
+            <div>
+                <h3>GACC</h3>
+                <span>Central de Artes</span>
+            </div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="index.html">🏠 Início</a>
+            <a href="solicitar.html">➕ Solicitar Arte</a>
+            <a href="dashboard.html" class="active">📊 Dashboard</a>
+            <a href="kanban.html">📋 Kanban</a>
+            <a href="#" onclick="fazerLogout(); return false;" style="margin-top:auto; color:#c0392b;">🚪 Sair</a>
+        </nav>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="dashboard-content">
+
+        <div class="dashboard-header">
+            <h1>Painel de Controle</h1>
+            <a href="solicitar.html" class="btn-primary">Nova Solicitação</a>
+        </div>
+
+        <!-- CARDS DE STATUS -->
+        <section class="stats-grid">
+            <div class="status-card">
+                <small>NOVAS</small>
+                <h2 id="totalNovas">—</h2>
+            </div>
+            <div class="status-card">
+                <small>EM ANÁLISE</small>
+                <h2 id="totalAnalise">—</h2>
+            </div>
+            <div class="status-card">
+                <small>EM CRIAÇÃO</small>
+                <h2 id="totalCriacao">—</h2>
+            </div>
+            <div class="status-card">
+                <small>ENTREGUES</small>
+                <h2 id="totalEntregue">—</h2>
+            </div>
+        </section>
+
+        <!-- TABELA -->
+        <section class="table-card">
+            <div class="table-header">
+                <h2>Solicitações Recentes</h2>
+                <small style="color:#888; font-size:13px;">Clique em uma linha para ver o briefing completo</small>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Solicitante</th>
+                        <th>Setor</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Entrega</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCorpo">
+                    <tr>
+                        <td colspan="6" style="text-align:center; color:#888; padding:30px;">
+                            Carregando solicitações...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <!-- RESUMO -->
+    <section class="dashboard-resumo">
+        <div class="resumo-card">
+            <h3>📊 Resumo Geral</h3>
+            <p>Total de demandas: <strong id="totalDemandas">—</strong></p>
+            <p>🔴 Alta: <strong id="totalAlta">—</strong></p>
+            <p>🟡 Média: <strong id="totalMedia">—</strong></p>
+            <p>🟢 Baixa: <strong id="totalBaixa">—</strong></p>
+        </div>
+        <div class="resumo-card">
+            <h3>📈 Produtividade</h3>
+            <div class="barra-produtividade">
+                <div id="barraConclusao" class="barra-interna"></div>
+            </div>
+            <p id="textoConclusao">Calculando...</p>
+        </div>
+        <div class="resumo-card">
+            <h3>🕒 Últimas Solicitações</h3>
+            <ul id="ultimasSolicitacoes"></ul>
+        </div>
+    </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

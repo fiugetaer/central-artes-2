@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban | Central de Artes</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { overflow-x: hidden; margin: 0; }
+        .kanban-page { min-height: 100vh; background: #f8f7f2; display: flex; flex-direction: column; }
+        .kanban-header { display: flex; justify-content: space-between; align-items: center; padding: 28px 36px 20px; background: white; border-bottom: 1px solid #e5e5e5; }
+        .kanban-header h1 { font-family: 'Playfair Display', serif; font-size: 36px; margin: 0; }
+        .kanban-header-actions { display: flex; gap: 10px; align-items: center; }
+        .kanban-board { display: flex; gap: 16px; padding: 24px 36px 40px; overflow-x: auto; flex: 1; align-items: flex-start; }
+        .kanban-column { min-width: 280px; width: 280px; flex-shrink: 0; background: #eef1f0; border-radius: 16px; display: flex; flex-direction: column; }
+        .kanban-column-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 10px; }
+        .kanban-column-header h3 { font-size: 14px; font-weight: 700; color: #173042; margin: 0; }
+        .kanban-count { background: #d5dedd; color: #3b5c58; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; min-width: 22px; text-align: center; }
+        .kanban-drop-zone { flex: 1; padding: 4px 10px 12px; min-height: 100px; border-radius: 0 0 16px 16px; transition: background .15s; }
+        .kanban-drop-zone.sobre { background: #c8e6e3; outline: 2px dashed #7dbdb8; outline-offset: -4px; }
+        .kanban-placeholder { background: #d4eae7; border: 2px dashed #7dbdb8; border-radius: 12px; margin-bottom: 10px; pointer-events: none; }
+        .kanban-card { background: white; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.07); cursor: grab; border: 2px solid transparent; transition: border-color .15s, box-shadow .15s; user-select: none; }
+        .kanban-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,.12); border-color: #b8d8d4; }
+        .kanban-card-clone { position: fixed; pointer-events: none; z-index: 9999; opacity: 0.9; transform: rotate(2deg) scale(1.03); box-shadow: 0 12px 32px rgba(0,0,0,.2); border-radius: 12px; background: white; padding: 14px; border: 2px solid #7dbdb8; cursor: grabbing; }
+        .kanban-card h4 { font-size: 14px; font-weight: 700; color: #173042; margin: 8px 0 6px; }
+        .kanban-card p { font-size: 13px; color: #555; margin-bottom: 10px; line-height: 1.45; max-height: 3.8em; overflow: hidden; }
+        .kanban-card-meta { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+        .kanban-card-meta small { font-size: 12px; color: #777; }
+        .tag { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+        .tag.alta { background: #ffe3e3; color: #c92a2a; }
+        .tag.media { background: #fff4d6; color: #e67700; }
+        .tag.baixa { background: #d3f9d8; color: #2b8a3e; }
+        .kanban-card-footer { display: flex; justify-content: flex-end; margin-top: 4px; }
+        .btn-avancar { background: none; border: 1px solid #c8d8d6; color: #007c80; font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 8px; cursor: pointer; }
+        .btn-avancar:hover { background: #eaf4f2; }
+        .btn-avancar:disabled { color: #aaa; border-color: #e5e5e5; cursor: default; background: none; }
+        .btn-secondary { background: white; border: 1px solid #d8d8d8; color: #173042; text-decoration: none; padding: 10px 18px; border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; }
+        .btn-primary { background: #007c80; color: white; text-decoration: none; padding: 10px 18px; border-radius: 12px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; }
+        #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: #173042; color: white; padding: 10px 22px; border-radius: 999px; font-size: 14px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 99999; }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .kanban-empty { text-align: center; color: #aaa; font-size: 13px; padding: 20px 10px; }
+        .kanban-loading { text-align: center; color: #888; font-size: 13px; padding: 30px 10px; }
+    </style>
+</head>
+<body>
+
+<script>
+// Proteção de rota real — verifica sessão Supabase Auth
+// Roda após os scripts do Supabase carregarem (no final do body)
+</script>
+
+<div class="kanban-page">
+    <div class="kanban-header">
+        <h1>Fluxo de Demandas</h1>
+        <div class="kanban-header-actions">
+            <a href="dashboard.html" class="btn-secondary">📊 Dashboard</a>
+            <a href="solicitar.html" class="btn-primary">➕ Nova Arte</a>
+            <button onclick="confirmarLimpar()" class="btn-secondary">🗑 Limpar</button>
+            <button onclick="fazerLogout()" class="btn-secondary">Sair</button>
+        </div>
+    </div>
+
+    <div class="kanban-board">
+        <div class="kanban-column">
+            <div class="kanban-column-header">
+                <h3>📌 Novas</h3>
+                <span class="kanban-count" id="countNova">0</span>
+            </div>
+            <div class="kanban-drop-zone" id="colunaNova" data-status="Nova"></div>
+        </div>
+        <div class="kanban-column">
+            <div class="kanban-column-header">
+                <h3>📋 Em Análise</h3>
+                <span class="kanban-count" id="countAnalise">0</span>
+            </div>
+            <div class="kanban-drop-zone" id="colunaAnalise" data-status="Analise"></div>
+        </div>
+        <div class="kanban-column">
+            <div class="kanban-column-header">
+                <h3>🎨 Em Criação</h3>
+                <span class="kanban-count" id="countCriacao">0</span>
+            </div>
+            <div class="kanban-drop-zone" id="colunaCriacao" data-status="Criacao"></div>
+        </div>
+        <div class="kanban-column">
+            <div class="kanban-column-header">
+                <h3>👀 Aprovação</h3>
+                <span class="kanban-count" id="countAprovacao">0</span>
+            </div>
+            <div class="kanban-drop-zone" id="colunaAprovacao" data-status="Aprovacao"></div>
+        </div>
+        <div class="kanban-column">
+            <div class="kanban-column-header">
+                <h3>✅ Entregue</h3>
+                <span class="kanban-count" id="countEntregue">0</span>
+            </div>
+            <div class="kanban-drop-zone" id="colunaEntregue" data-status="Entregue"></div>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<!-- NÃO carrega script.js aqui — kanban é autocontido -->
+
+<script>
+// ─── MAPEAMENTOS ─────────────────────────────────────────────────────────────
+var ZONAS = {
+    Nova:      document.getElementById("colunaNova"),
+    Analise:   document.getElementById("colunaAnalise"),
+    Criacao:   document.getElementById("colunaCriacao"),
+    Aprovacao: document.getElementById("colunaAprovacao"),
+    Entregue:  document.getElementById("colunaEntregue")
+};
+
+var CONTADORES = {
+    Nova:      document.getElementById("countNova"),
+    Analise:   document.getElementById("countAnalise"),
+    Criacao:   document.getElementById("countCriacao"),
+    Aprovacao: document.getElementById("countAprovacao"),
+    Entregue:  document.getElementById("countEntregue")
+};
+
+var PROXIMO = {
+    Nova: "Analise", Analise: "Criacao",
+    Criacao: "Aprovacao", Aprovacao: "Entregue", Entregue: null
+};
+
+var LABEL = {
+    Analise: "Analisar →", Criacao: "Criar →",
+    Aprovacao: "Aprovar →", Entregue: "Entregar →"
+};
+
+// ─── ESTADO DO DRAG ──────────────────────────────────────────────────────────
+var drag = {
+    ativo: false,
+    arrastou: false,  // true se o mouse se moveu após o mousedown (distingue clique de drag)
+    cardEl: null,
+    clone: null,
+    placeholder: null,
+    id: null,
+    statusOrigem: null,
+    offsetX: 0,
+    offsetY: 0
+};
+
+// ─── CARREGAR KANBAN ─────────────────────────────────────────────────────────
+function carregarKanban() {
+    // Mostra loading
+    Object.values(ZONAS).forEach(function(z) {
+        z.innerHTML = '<p class="kanban-loading">Carregando...</p>';
+    });
+
+    supabaseClient
+        .from("Solicitacoes")
+        .select("*")
+        .order("id", { ascending: false })
+        .then(function(res) {
+            if (res.error) {
+                console.error(res.error);
+                Object.values(ZONAS).forEach(function(z) {
+                    z.innerHTML = '<p class="kanban-empty">Erro ao carregar.</p>';
+                });
+                return;
+            }
+
+            var data = res.data;
+
+            // Limpa e preenche cada coluna
+            Object.keys(ZONAS).forEach(function(status) {
+                var zona = ZONAS[status];
+                var cont = CONTADORES[status];
+                zona.innerHTML = "";
+
+                var itens = data.filter(function(i) { return i.status === status; });
+                cont.textContent = itens.length;
+
+                if (itens.length === 0) {
+                    zona.innerHTML = '<p class="kanban-empty">Sem demandas aqui</p>';
+                } else {
+                    itens.forEach(function(item) {
+                        zona.appendChild(criarCard(item));
+                    });
+                }
+            });
+        });
+}
+
+// ─── CRIAR CARD ──────────────────────────────────────────────────────────────
+function criarCard(item) {
+    var card = document.createElement("div");
+    card.className = "kanban-card";
+    card.dataset.id = item.id;
+    card.dataset.status = item.status;
+
+    // Remove acentos para usar como classe CSS
+    var prioClasse = (item.prioridade || "Baixa")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+    var dataFmt = item.entrega ? formatarData(item.entrega) : "Sem prazo";
+    var proximo = PROXIMO[item.status];
+    var botaoHTML = proximo
+        ? '<button class="btn-avancar">' + LABEL[proximo] + '</button>'
+        : '<button class="btn-avancar" disabled>✅ Finalizado</button>';
+
+    card.innerHTML =
+        '<span class="tag ' + prioClasse + '">' + item.prioridade + '</span>' +
+        '<h4>' + item.tipo + '</h4>' +
+        '<p>' + item.objetivo + '</p>' +
+        '<div class="kanban-card-meta">' +
+            '<small>👤 ' + item.nome + '</small>' +
+            '<small>🏢 ' + item.setor + '</small>' +
+            '<small>📅 ' + dataFmt + '</small>' +
+        '</div>' +
+        '<div class="kanban-card-footer">' + botaoHTML + '</div>';
+
+    // Botão avançar
+    var btn = card.querySelector(".btn-avancar:not([disabled])");
+    if (btn && proximo) {
+        (function(cardRef, cardId, novoStatus) {
+            btn.addEventListener("click", function(e) {
+                e.stopPropagation();
+                // Move o card para a coluna correta visualmente
+                var zonaDestino = ZONAS[novoStatus];
+                if (zonaDestino) {
+                    var vazioDestino = zonaDestino.querySelector(".kanban-empty");
+                    if (vazioDestino) vazioDestino.remove();
+                    zonaDestino.appendChild(cardRef);
+
+                    var statusAtual = cardRef.dataset.status;
+                    var zonaOrigem = ZONAS[statusAtual];
+                    cardRef.dataset.status = novoStatus;
+
+                    if (zonaOrigem && zonaOrigem.querySelectorAll(".kanban-card").length === 0) {
+                        zonaOrigem.innerHTML = '<p class="kanban-empty">Sem demandas aqui</p>';
+                    }
+
+                    var cOrig = CONTADORES[statusAtual];
+                    var cDest = CONTADORES[novoStatus];
+                    if (cOrig) cOrig.textContent = Math.max(0, parseInt(cOrig.textContent) - 1);
+                    if (cDest) cDest.textContent = (parseInt(cDest.textContent) || 0) + 1;
+                }
+
+                atualizarBotaoCard(cardRef, cardId, novoStatus);
+                salvarStatus(cardId, novoStatus);
+            });
+        })(card, item.id, proximo);
+    }
+
+    // Clique no card abre o modal de detalhe
+    // Só abre se não houve arrasto (flag drag.arrastou)
+    card.addEventListener("click", function(e) {
+        if (e.target.closest(".btn-avancar")) return;
+        if (drag.arrastou) return; // veio de um drag, não abre modal
+        abrirModalDetalhe(item);
+    });
+
+    // Evento de drag — registrado AQUI, junto com a criação do card
+    card.addEventListener("mousedown", iniciarDrag);
+
+    return card;
+}
+
+// ─── DRAG: INICIAR (mousedown no card) ───────────────────────────────────────
+function iniciarDrag(e) {
+    // Ignora clique no botão avançar
+    if (e.target.closest && e.target.closest(".btn-avancar")) return;
+    if (e.button !== 0) return; // só botão esquerdo
+
+    e.preventDefault();
+
+    var card = this;
+    var rect = card.getBoundingClientRect();
+
+    // Clone visual que vai seguir o cursor
+    var clone = card.cloneNode(true);
+    clone.className = "kanban-card-clone";
+    clone.style.width  = rect.width  + "px";
+    clone.style.height = rect.height + "px";
+    clone.style.left   = rect.left   + "px";
+    clone.style.top    = rect.top    + "px";
+    document.body.appendChild(clone);
+
+    // Placeholder que ocupa o espaço do card original
+    var ph = document.createElement("div");
+    ph.className = "kanban-placeholder";
+    ph.style.height = rect.height + "px";
+    card.parentNode.insertBefore(ph, card);
+
+    // Esconde o card original (mantém no DOM para saber a posição)
+    card.style.visibility = "hidden";
+
+    drag.ativo        = true;
+    drag.arrastou     = false;
+    drag.cardEl       = card;
+    drag.clone        = clone;
+    drag.placeholder  = ph;
+    drag.id           = parseInt(card.dataset.id);
+    drag.statusOrigem = card.dataset.status;
+    drag.offsetX      = e.clientX - rect.left;
+    drag.offsetY      = e.clientY - rect.top;
+}
+
+// ─── DRAG: MOVER (mousemove no document) ─────────────────────────────────────
+document.addEventListener("mousemove", function(e) {
+    if (!drag.ativo) return;
+
+    drag.arrastou = true;
+
+    // Move o clone junto com o cursor
+    drag.clone.style.left = (e.clientX - drag.offsetX) + "px";
+    drag.clone.style.top  = (e.clientY - drag.offsetY) + "px";
+
+    // Detecta qual elemento está sob o cursor (esconde o clone por 1ms)
+    drag.clone.style.visibility = "hidden";
+    var elAbaixo = document.elementFromPoint(e.clientX, e.clientY);
+    drag.clone.style.visibility = "";
+
+    // Remove destaque de todas as zonas
+    Object.values(ZONAS).forEach(function(z) { z.classList.remove("sobre"); });
+
+    if (!elAbaixo) return;
+
+    var zona = elAbaixo.closest ? elAbaixo.closest(".kanban-drop-zone") : null;
+    if (!zona) return;
+
+    zona.classList.add("sobre");
+
+    // Reposiciona o placeholder para mostrar onde o card vai cair
+    var cards = Array.prototype.slice.call(zona.querySelectorAll(".kanban-card")).filter(function(c) {
+        return c !== drag.cardEl;
+    });
+
+    var inserirAntes = null;
+    for (var i = 0; i < cards.length; i++) {
+        var r = cards[i].getBoundingClientRect();
+        if (e.clientY < r.top + r.height / 2) {
+            inserirAntes = cards[i];
+            break;
+        }
+    }
+
+    if (inserirAntes) {
+        zona.insertBefore(drag.placeholder, inserirAntes);
+    } else {
+        zona.appendChild(drag.placeholder);
+    }
+});
+
+// ─── DRAG: SOLTAR (mouseup no document) ──────────────────────────────────────
+document.addEventListener("mouseup", function(e) {
+    if (!drag.ativo) return;
+
+    // Detecta zona de destino
+    drag.clone.style.visibility = "hidden";
+    var elAbaixo = document.elementFromPoint(e.clientX, e.clientY);
+    drag.clone.style.visibility = "";
+
+    var zona = elAbaixo ? (elAbaixo.closest ? elAbaixo.closest(".kanban-drop-zone") : null) : null;
+    var novoStatus = zona ? zona.dataset.status : null;
+
+    // Limpa elementos temporários
+    drag.clone.remove();
+    drag.placeholder.remove();
+    Object.values(ZONAS).forEach(function(z) { z.classList.remove("sobre"); });
+
+    // Guarda referências antes de resetar
+    var idParaSalvar  = drag.id;
+    var statusOrigem  = drag.statusOrigem;
+    var cardOriginal  = drag.cardEl;
+
+    // Reseta estado do drag
+    drag.ativo        = false;
+    drag.cardEl       = null;
+    drag.clone        = null;
+    drag.placeholder  = null;
+    drag.id           = null;
+    drag.statusOrigem = null;
+
+    if (novoStatus && novoStatus !== statusOrigem) {
+        // Move o card visualmente antes de salvar (feedback imediato)
+        cardOriginal.dataset.status = novoStatus;
+        cardOriginal.style.visibility = "";
+
+        // Remove "Sem demandas" da zona destino se existir
+        var vazioDestino = zona.querySelector(".kanban-empty");
+        if (vazioDestino) vazioDestino.remove();
+
+        // Adiciona o card na posição do placeholder (que já está na zona certa)
+        zona.appendChild(cardOriginal);
+
+        // Verifica se zona de origem ficou vazia
+        var zonaOrigem = ZONAS[statusOrigem];
+        var cardsOrigem = zonaOrigem.querySelectorAll(".kanban-card");
+        if (cardsOrigem.length === 0) {
+            zonaOrigem.innerHTML = '<p class="kanban-empty">Sem demandas aqui</p>';
+        }
+
+        // Atualiza contadores
+        var cOrig = CONTADORES[statusOrigem];
+        var cDest = CONTADORES[novoStatus];
+        if (cOrig) cOrig.textContent = Math.max(0, parseInt(cOrig.textContent) - 1);
+        if (cDest) cDest.textContent = (parseInt(cDest.textContent) || 0) + 1;
+
+        // Atualiza o botão do card para refletir o novo status
+        atualizarBotaoCard(cardOriginal, idParaSalvar, novoStatus);
+
+        // Salva no banco
+        salvarStatus(idParaSalvar, novoStatus);
+    } else {
+        // Voltou para a mesma coluna — só restaura visibilidade
+        cardOriginal.style.visibility = "";
+    }
+});
+
+// ─── SALVAR STATUS NO SUPABASE ───────────────────────────────────────────────
+function salvarStatus(id, novoStatus) {
+    mostrarToast("Salvando...");
+
+    supabaseClient
+        .from("Solicitacoes")
+        .update({ status: novoStatus })
+        .eq("id", id)
+        .then(function(res) {
+            if (res.error) {
+                console.error(res.error);
+                mostrarToast("❌ Erro ao salvar. Recarregando...");
+                // Só recarrega do banco se der erro (para mostrar o estado correto)
+                setTimeout(carregarKanban, 1000);
+                return;
+            }
+            // Sucesso — o card já está na posição certa visualmente, não precisa recarregar
+            mostrarToast("✅ Salvo!");
+        });
+}
+
+// ─── ATUALIZAR BOTÃO DO CARD ─────────────────────────────────────────────────
+function atualizarBotaoCard(card, id, novoStatus) {
+    var footer = card.querySelector(".kanban-card-footer");
+    if (!footer) return;
+
+    var proximo = PROXIMO[novoStatus];
+
+    var novoBotao = document.createElement("button");
+    novoBotao.className = "btn-avancar";
+
+    if (proximo) {
+        novoBotao.textContent = LABEL[proximo];
+        novoBotao.addEventListener("click", function(e) {
+            e.stopPropagation();
+            salvarStatus(id, proximo);
+        });
+    } else {
+        novoBotao.textContent = "✅ Finalizado";
+        novoBotao.disabled = true;
+    }
+
+    footer.innerHTML = "";
+    footer.appendChild(novoBotao);
+}
+
+// ─── UTILITÁRIOS ─────────────────────────────────────────────────────────────
+function formatarData(iso) {
+    var p = iso.split("-");
+    return p.length < 3 ? iso : p[2] + "/" + p[1];
+}
+
+function mostrarToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(mostrarToast._timer);
+    mostrarToast._timer = setTimeout(function() { t.classList.remove("show"); }, 2200);
+}
+
+function confirmarLimpar() {
+    if (!confirm("Apagar TODAS as demandas? Esta ação não pode ser desfeita.")) return;
+    supabaseClient.from("Solicitacoes").delete().neq("id", 0).then(function(res) {
+        if (res.error) { alert("Erro ao limpar."); return; }
+        carregarKanban();
+    });
+}
+
+// ─── LOGOUT real (Supabase Auth) ─────────────────────────────────────────────
+function fazerLogout() {
+    supabaseClient.auth.signOut().then(function() {
+        window.location.href = "login.html";
+    });
+}
+
+// ─── MODAL DE DETALHE DA SOLICITAÇÃO ─────────────────────────────────────────
+function abrirModalDetalhe(item) {
+
+    var anterior = document.getElementById("modalDetalhe");
+    if (anterior) anterior.remove();
+
+    var statusLabel = {
+        Nova: "Nova", Analise: "Em análise",
+        Criacao: "Em criação", Aprovacao: "Aprovação", Entregue: "Entregue"
+    };
+    var prioridadeCor = { Alta: "#c92a2a", "Média": "#e67700", Baixa: "#2b8a3e" };
+    var cor = prioridadeCor[item.prioridade] || "#555";
+    var dataFmt = item.entrega ? formatarData(item.entrega) : "Sem prazo";
+
+    function secao(titulo, campos) {
+        return '<div style="margin-bottom:22px;">' +
+            '<div style="font-size:11px;font-weight:700;color:#007c80;text-transform:uppercase;' +
+                'letter-spacing:.08em;padding-bottom:8px;border-bottom:2px solid #eaf4f2;margin-bottom:14px;">' +
+                titulo +
+            '</div>' + campos + '</div>';
+    }
+
+    function campo(label, valor) {
+        return '<div style="margin-bottom:14px;">' +
+            '<div style="font-size:11px;font-weight:600;color:#637381;text-transform:uppercase;' +
+                'letter-spacing:.06em;margin-bottom:4px;">' + label + '</div>' +
+            '<div style="font-size:15px;color:' + (valor ? '#173042' : '#bbb') + ';line-height:1.6;">' +
+                (valor || '—') +
+            '</div>' +
+        '</div>';
+    }
+
+    function campoLink(label, valor) {
+        if (!valor) return campo(label, null);
+        return '<div style="margin-bottom:14px;">' +
+            '<div style="font-size:11px;font-weight:600;color:#637381;text-transform:uppercase;' +
+                'letter-spacing:.06em;margin-bottom:4px;">' + label + '</div>' +
+            '<a href="' + valor + '" target="_blank" style="font-size:14px;color:#007c80;word-break:break-all;">' + valor + '</a>' +
+        '</div>';
+    }
+
+    function campoArquivo(valor) {
+        if (!valor) return campo("Arquivo de Referência", null);
+        var isImagem = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(valor);
+        var isVideo  = /\.(mp4|mov|webm)(\?|$)/i.test(valor);
+        if (isImagem) {
+            return '<div style="margin-bottom:14px;">' +
+                '<div style="font-size:11px;font-weight:600;color:#637381;text-transform:uppercase;' +
+                    'letter-spacing:.06em;margin-bottom:8px;">Arquivo de Referência</div>' +
+                '<a href="' + valor + '" target="_blank">' +
+                    '<img src="' + valor + '" style="max-width:100%;max-height:240px;border-radius:12px;' +
+                        'border:1px solid #dce6e4;object-fit:cover;display:block;">' +
+                '</a>' +
+                '<a href="' + valor + '" target="_blank" style="font-size:12px;color:#007c80;margin-top:6px;display:inline-block;">' +
+                    '🔗 Abrir em tamanho completo' +
+                '</a>' +
+            '</div>';
+        }
+        if (isVideo) {
+            return '<div style="margin-bottom:14px;">' +
+                '<div style="font-size:11px;font-weight:600;color:#637381;text-transform:uppercase;' +
+                    'letter-spacing:.06em;margin-bottom:8px;">Arquivo de Referência</div>' +
+                '<video src="' + valor + '" controls style="max-width:100%;max-height:240px;' +
+                    'border-radius:12px;border:1px solid #dce6e4;display:block;"></video>' +
+            '</div>';
+        }
+        return '<div style="margin-bottom:14px;">' +
+            '<div style="font-size:11px;font-weight:600;color:#637381;text-transform:uppercase;' +
+                'letter-spacing:.06em;margin-bottom:6px;">Arquivo de Referência</div>' +
+            '<a href="' + valor + '" target="_blank" style="' +
+                'display:inline-flex;align-items:center;gap:8px;background:#eaf4f2;color:#007c80;' +
+                'text-decoration:none;padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;">' +
+                '📄 Baixar arquivo' +
+            '</a>' +
+        '</div>';
+    }
+
+    var modal = document.createElement("div");
+    modal.id = "modalDetalhe";
+    modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:99999;padding:20px;";
+
+    modal.innerHTML =
+        '<div style="background:white;border-radius:24px;padding:36px;max-width:660px;width:100%;' +
+            'max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.18);">' +
+
+            '<button onclick="document.getElementById(\'modalDetalhe\').remove()" style="' +
+                'position:absolute;top:20px;right:20px;background:#f4f4f4;border:none;' +
+                'border-radius:50%;width:36px;height:36px;font-size:22px;cursor:pointer;color:#555;">×</button>' +
+
+            '<div style="margin-bottom:20px;">' +
+                '<span style="display:inline-block;background:#eaf4f2;color:#007c80;font-size:12px;' +
+                    'font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:10px;">' +
+                    '#' + String(item.id).padStart(3,"0") + ' · ' + (statusLabel[item.status] || item.status) +
+                '</span>' +
+                '<h2 style="font-family:\'Playfair Display\',serif;font-size:26px;margin:0 0 8px;color:#173042;">' +
+                    item.tipo +
+                '</h2>' +
+                '<span style="display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;' +
+                    'border-radius:999px;background:' + cor + '22;color:' + cor + ';">' +
+                    'Prioridade ' + item.prioridade +
+                '</span>' +
+            '</div>' +
+
+            '<hr style="border:none;border-top:1px solid #eee;margin:0 0 20px;">' +
+
+            secao("👤 Dados do Solicitante",
+                campo("Nome",     item.nome) +
+                campo("Setor",    item.setor) +
+                campo("WhatsApp", item.whatsapp) +
+                campo("E-mail",   item.email_solicitante)
+            ) +
+
+            secao("🎨 Informações da Arte",
+                campo("Tipo da Peça",      item.tipo) +
+                campo("Campanha",          item.campanha) +
+                campo("Objetivo da Arte",  item.objetivo) +
+                campo("Texto Obrigatório", item.texto_obrigatorio) +
+                campo("Público-Alvo",      item.publico_alvo)
+            ) +
+
+            secao("📅 Prazo",
+                campo("Data Desejada", dataFmt) +
+                campo("Prioridade",    item.prioridade)
+            ) +
+
+            secao("📎 Referências",
+                campoArquivo(item.arquivo_url) +
+                campoLink("Link de Referência", item.link_referencia)
+            ) +
+
+            secao("📝 Observações Finais",
+                campo("Observações", item.observacoes)
+            ) +
+
+            '<div style="text-align:right;margin-top:16px;">' +
+                '<button onclick="document.getElementById(\'modalDetalhe\').remove()" style="' +
+                    'background:#007c80;color:white;border:none;padding:12px 28px;' +
+                    'border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;">Fechar</button>' +
+            '</div>' +
+
+        '</div>';
+
+    modal.addEventListener("click", function(e) { if (e.target === modal) modal.remove(); });
+    document.body.appendChild(modal);
+}
+
+function campoDet(label, valor) {
+    if (!valor) return "";
+    return '<div style="margin-bottom:18px;">' +
+        '<div style="font-size:11px;font-weight:700;color:#637381;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">' + label + '</div>' +
+        '<div style="font-size:15px;color:#173042;line-height:1.6;">' + valor + '</div>' +
+    '</div>';
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+// Verifica sessão Supabase Auth antes de carregar qualquer dado
+supabaseClient.auth.getSession().then(function(res) {
+    if (!res.data.session) {
+        window.location.href = "login.html";
+        return;
+    }
+    carregarKanban();
+});
+</script>
+</body>
+</html>
