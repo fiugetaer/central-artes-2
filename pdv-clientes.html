@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="pagina-protegida" content="true">
+    <title>Clientes | Portal Comercial GACC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pdv-base.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="pdv-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div class="brand-text">
+            <h3>Portal Comercial</h3>
+            <span>GACC-AM</span>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="pdv-dashboard.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <span>Dashboard</span>
+        </a>
+        <a href="pdv-orcamentos.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Orçamentos</span>
+        </a>
+        <a href="pdv-clientes.html" class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Clientes</span>
+        </a>
+        <a href="pdv-produtos.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            <span>Produtos</span>
+        </a>
+        <a href="pdv-vendas.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Vendas Externas</span>
+            <span class="nav-badge"></span>
+        </a>
+        <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Histórico</span>
+            <span class="nav-badge">BREVE</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="pdv.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M15 3H19a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H15"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>Sair do Portal</span>
+        </a>
+    </div>
+</aside>
+
+<!-- CONTEÚDO -->
+<main class="pdv-main">
+
+    <div class="pdv-topbar">
+        <span class="topbar-label">Portal</span>
+        <div class="topbar-actions">
+            <div class="avatar" id="userAvatar">AD</div>
+        </div>
+    </div>
+
+    <div class="pdv-content">
+
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1>Clientes</h1>
+                <p>Cadastro de clientes do portal</p>
+            </div>
+            <button class="btn-primary" onclick="abrirModalCliente()">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Novo cliente
+            </button>
+        </div>
+
+        <div class="table-card">
+            <div class="table-toolbar">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="buscaCliente" placeholder="Pesquisar por nome, empresa, e-mail..." oninput="filtrarClientes()">
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Empresa</th>
+                        <th>Documento</th>
+                        <th>Contato</th>
+                        <th>Cidade/UF</th>
+                        <th style="text-align:right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaClientes">
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">Carregando clientes...</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>
+
+<!-- MODAL CLIENTE -->
+<div class="modal-overlay" id="modalCliente">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalClienteTitulo">Novo Cliente</h2>
+            <button class="modal-close" onclick="fecharModalCliente()">×</button>
+        </div>
+
+        <input type="hidden" id="clienteId">
+
+        <div class="form-grid">
+            <div class="campo">
+                <label>Nome *</label>
+                <input type="text" id="clienteNome" placeholder="Nome completo">
+            </div>
+            <div class="campo">
+                <label>Empresa</label>
+                <input type="text" id="clienteEmpresa" placeholder="Razão social ou nome fantasia">
+            </div>
+            <div class="campo">
+                <label>CPF / CNPJ</label>
+                <input type="text" id="clienteDocumento" placeholder="000.000.000-00">
+            </div>
+            <div class="campo">
+                <label>Telefone</label>
+                <input type="tel" id="clienteTelefone" placeholder="(92) 3456-7890">
+            </div>
+            <div class="campo">
+                <label>WhatsApp</label>
+                <input type="tel" id="clienteWhatsapp" placeholder="(92) 99999-9999">
+            </div>
+            <div class="campo">
+                <label>E-mail</label>
+                <input type="email" id="clienteEmail" placeholder="email@empresa.com">
+            </div>
+            <div class="campo full">
+                <label>Endereço</label>
+                <input type="text" id="clienteEndereco" placeholder="Rua, número, bairro">
+            </div>
+            <div class="campo">
+                <label>Cidade</label>
+                <input type="text" id="clienteCidade" placeholder="Manaus">
+            </div>
+            <div class="campo">
+                <label>Estado</label>
+                <select id="clienteEstado">
+                    <option value="">UF</option>
+                    <option value="AC">AC</option><option value="AL">AL</option>
+                    <option value="AM" selected>AM</option><option value="AP">AP</option>
+                    <option value="BA">BA</option><option value="CE">CE</option>
+                    <option value="DF">DF</option><option value="ES">ES</option>
+                    <option value="GO">GO</option><option value="MA">MA</option>
+                    <option value="MG">MG</option><option value="MS">MS</option>
+                    <option value="MT">MT</option><option value="PA">PA</option>
+                    <option value="PB">PB</option><option value="PE">PE</option>
+                    <option value="PI">PI</option><option value="PR">PR</option>
+                    <option value="RJ">RJ</option><option value="RN">RN</option>
+                    <option value="RO">RO</option><option value="RR">RR</option>
+                    <option value="RS">RS</option><option value="SC">SC</option>
+                    <option value="SE">SE</option><option value="SP">SP</option>
+                    <option value="TO">TO</option>
+                </select>
+            </div>
+            <div class="campo full">
+                <label>Observações</label>
+                <textarea id="clienteObs" placeholder="Informações adicionais sobre o cliente..."></textarea>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="fecharModalCliente()">Cancelar</button>
+            <button class="btn-primary" onclick="salvarCliente()">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Salvar cliente
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="pdv-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+
+var todosClientes = [];
+
+document.addEventListener("DOMContentLoaded", async function() {
+    var sess = await supabaseClient.auth.getSession();
+    if (!sess.data.session) { window.location.href = "login.html"; return; }
+
+    var email = sess.data.session.user.email || "";
+    document.getElementById("userAvatar").textContent = email.slice(0, 2).toUpperCase();
+
+    await carregarClientes();
+});
+
+async function carregarClientes() {
+    var tbody = document.getElementById("tabelaClientes");
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Carregando...</div></td></tr>';
+
+    var res = await supabaseClient
+        .from("clientes")
+        .select("*")
+        .eq("ativo", true)
+        .order("nome");
+
+    if (res.error) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Erro ao carregar clientes.</div></td></tr>';
+        return;
+    }
+
+    todosClientes = res.data || [];
+    renderizarClientes(todosClientes);
+}
+
+function renderizarClientes(lista) {
+    var tbody = document.getElementById("tabelaClientes");
+
+    if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">' +
+            '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>' +
+            'Nenhum cliente cadastrado. Clique em "Novo cliente" para começar.' +
+        '</div></td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = "";
+    lista.forEach(function(c) {
+        var cidadeUF = [c.cidade, c.estado].filter(Boolean).join("/") || "—";
+        var contato  = c.whatsapp || c.telefone || "—";
+
+        tbody.innerHTML += '<tr>' +
+            '<td style="font-weight:600;color:#0f172a;">' + c.nome + '</td>' +
+            '<td class="td-categoria">' + (c.empresa || "—") + '</td>' +
+            '<td style="font-size:13px;color:#64748b;">' + (c.cpf_cnpj || "—") + '</td>' +
+            '<td style="font-size:13px;">' + contato + '</td>' +
+            '<td style="font-size:13px;color:#64748b;">' + cidadeUF + '</td>' +
+            '<td><div class="td-acoes">' +
+                '<button class="btn-edit" onclick="editarCliente(' + c.id + ')" title="Editar">' +
+                    '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+                '</button>' +
+                '<button class="btn-danger" onclick="excluirCliente(' + c.id + ', \'' + c.nome.replace(/'/g, "\\'") + '\')" title="Excluir">' +
+                    '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>' +
+                '</button>' +
+            '</div></td>' +
+        '</tr>';
+    });
+}
+
+function filtrarClientes() {
+    var busca = document.getElementById("buscaCliente").value.toLowerCase();
+    if (!busca) { renderizarClientes(todosClientes); return; }
+    var filtrados = todosClientes.filter(function(c) {
+        return (c.nome || "").toLowerCase().includes(busca) ||
+               (c.empresa || "").toLowerCase().includes(busca) ||
+               (c.email || "").toLowerCase().includes(busca) ||
+               (c.cpf_cnpj || "").includes(busca);
+    });
+    renderizarClientes(filtrados);
+}
+
+function abrirModalCliente() {
+    document.getElementById("modalClienteTitulo").textContent = "Novo Cliente";
+    ["clienteId","clienteNome","clienteEmpresa","clienteDocumento",
+     "clienteTelefone","clienteWhatsapp","clienteEmail",
+     "clienteEndereco","clienteCidade","clienteObs"].forEach(function(id) {
+        document.getElementById(id).value = "";
+    });
+    document.getElementById("clienteEstado").value = "AM";
+    document.getElementById("modalCliente").classList.add("open");
+    document.getElementById("clienteNome").focus();
+}
+
+function fecharModalCliente() {
+    document.getElementById("modalCliente").classList.remove("open");
+}
+
+function editarCliente(id) {
+    var c = todosClientes.find(function(x) { return x.id === id; });
+    if (!c) return;
+
+    document.getElementById("modalClienteTitulo").textContent = "Editar Cliente";
+    document.getElementById("clienteId").value         = c.id;
+    document.getElementById("clienteNome").value       = c.nome       || "";
+    document.getElementById("clienteEmpresa").value    = c.empresa    || "";
+    document.getElementById("clienteDocumento").value  = c.cpf_cnpj   || "";
+    document.getElementById("clienteTelefone").value   = c.telefone   || "";
+    document.getElementById("clienteWhatsapp").value   = c.whatsapp   || "";
+    document.getElementById("clienteEmail").value      = c.email      || "";
+    document.getElementById("clienteEndereco").value   = c.endereco   || "";
+    document.getElementById("clienteCidade").value     = c.cidade     || "";
+    document.getElementById("clienteEstado").value     = c.estado     || "AM";
+    document.getElementById("clienteObs").value        = c.observacoes|| "";
+
+    document.getElementById("modalCliente").classList.add("open");
+}
+
+async function salvarCliente() {
+    var nome = document.getElementById("clienteNome").value.trim();
+    var id   = document.getElementById("clienteId").value;
+
+    if (!nome) { toast("O nome do cliente é obrigatório."); return; }
+
+    var dados = {
+        nome,
+        empresa:     document.getElementById("clienteEmpresa").value.trim(),
+        cpf_cnpj:    document.getElementById("clienteDocumento").value.trim(),
+        telefone:    document.getElementById("clienteTelefone").value.trim(),
+        whatsapp:    document.getElementById("clienteWhatsapp").value.trim(),
+        email:       document.getElementById("clienteEmail").value.trim(),
+        endereco:    document.getElementById("clienteEndereco").value.trim(),
+        cidade:      document.getElementById("clienteCidade").value.trim(),
+        estado:      document.getElementById("clienteEstado").value,
+        observacoes: document.getElementById("clienteObs").value.trim(),
+        updated_at:  new Date().toISOString()
+    };
+
+    var res;
+    if (id) {
+        res = await supabaseClient.from("clientes").update(dados).eq("id", id);
+    } else {
+        res = await supabaseClient.from("clientes").insert([{ ...dados, ativo: true }]);
+    }
+
+    if (res.error) { console.error(res.error); toast("Erro ao salvar cliente."); return; }
+
+    toast(id ? "✅ Cliente atualizado!" : "✅ Cliente cadastrado!");
+    fecharModalCliente();
+    carregarClientes();
+}
+
+async function excluirCliente(id, nome) {
+    if (!confirm('Excluir o cliente "' + nome + '"?')) return;
+    var res = await supabaseClient.from("clientes").update({ ativo: false }).eq("id", id);
+    if (res.error) { toast("Erro ao excluir cliente."); return; }
+    toast("Cliente removido.");
+    carregarClientes();
+}
+
+document.getElementById("modalCliente").addEventListener("click", function(e) {
+    if (e.target === this) fecharModalCliente();
+});
+
+function toast(msg) {
+    var t = document.getElementById("pdv-toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function() { t.classList.remove("show"); }, 2500);
+}
+
+</script>
+</body>
+</html>

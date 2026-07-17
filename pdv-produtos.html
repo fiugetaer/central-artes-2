@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="pagina-protegida" content="true">
+    <title>Produtos | Portal Comercial GACC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pdv-base.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="pdv-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div class="brand-text">
+            <h3>Portal Comercial</h3>
+            <span>GACC-AM</span>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="pdv-dashboard.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <span>Dashboard</span>
+        </a>
+        <a href="pdv-orcamentos.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>Orçamentos</span>
+        </a>
+        <a href="pdv-clientes.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Clientes</span>
+        </a>
+        <a href="pdv-produtos.html" class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            <span>Produtos</span>
+        </a>
+        <a href="pdv-vendas.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Vendas Externas</span>
+            <span class="nav-badge"></span>
+        </a>
+        <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Histórico</span>
+            <span class="nav-badge">BREVE</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="pdv.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M15 3H19a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H15"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>Sair do Portal</span>
+        </a>
+    </div>
+</aside>
+
+<!-- CONTEÚDO -->
+<main class="pdv-main">
+
+    <div class="pdv-topbar">
+        <span class="topbar-label">Portal</span>
+        <div class="topbar-actions">
+            <div class="avatar" id="userAvatar">AD</div>
+        </div>
+    </div>
+
+    <div class="pdv-content">
+
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1>Produtos</h1>
+                <p>Cadastro e estoque de produtos</p>
+            </div>
+            <button class="btn-primary" onclick="abrirModalProduto()">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Novo produto
+            </button>
+        </div>
+
+        <div class="table-card">
+            <div class="table-toolbar">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="buscaProduto" placeholder="Pesquisar por código, nome, marca..." oninput="filtrarProdutos()">
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Un.</th>
+                        <th style="text-align:right">Valor</th>
+                        <th style="text-align:right">Estoque</th>
+                        <th style="text-align:right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaProdutos">
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                                Carregando produtos...
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>
+
+<!-- MODAL PRODUTO -->
+<div class="modal-overlay" id="modalProduto">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalProdutoTitulo">Novo Produto</h2>
+            <button class="modal-close" onclick="fecharModalProduto()">×</button>
+        </div>
+
+        <input type="hidden" id="produtoId">
+
+        <div class="form-grid">
+            <div class="campo">
+                <label>Código *</label>
+                <input type="text" id="produtoCodigo" placeholder="PRD-001">
+            </div>
+            <div class="campo">
+                <label>Unidade</label>
+                <select id="produtoUnidade">
+                    <option value="UN">UN — Unidade</option>
+                    <option value="KG">KG — Quilograma</option>
+                    <option value="LT">LT — Litro</option>
+                    <option value="M">M — Metro</option>
+                    <option value="M2">M² — Metro quadrado</option>
+                    <option value="CX">CX — Caixa</option>
+                    <option value="PC">PC — Peça</option>
+                    <option value="SC">SC — Saco</option>
+                </select>
+            </div>
+            <div class="campo full">
+                <label>Nome do Produto *</label>
+                <input type="text" id="produtoNome" placeholder="Nome completo do produto">
+            </div>
+            <div class="campo">
+                <label>Categoria</label>
+                <select id="produtoCategoria">
+                    <option value="">Selecione...</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label>Marca</label>
+                <input type="text" id="produtoMarca" placeholder="Fabricante ou marca">
+            </div>
+            <div class="campo">
+                <label>Valor de Venda (R$)</label>
+                <input type="number" id="produtoValor" placeholder="0,00" min="0" step="0.01">
+            </div>
+            <div class="campo">
+                <label>Estoque Atual</label>
+                <input type="number" id="produtoEstoque" placeholder="0" min="0" step="0.01">
+            </div>
+            <div class="campo">
+                <label>Estoque Mínimo</label>
+                <input type="number" id="produtoEstoqueMin" placeholder="0" min="0" step="0.01">
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="fecharModalProduto()">Cancelar</button>
+            <button class="btn-primary" onclick="salvarProduto()">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Salvar produto
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="pdv-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+
+// ── ESTADO ───────────────────────────────────────────────
+var todosProdutos  = [];
+var todasCategorias = [];
+
+// ── INIT ─────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", async function() {
+    // Proteção de rota
+    var sess = await supabaseClient.auth.getSession();
+    if (!sess.data.session) { window.location.href = "login.html"; return; }
+
+    // Avatar com iniciais do email
+    var email = sess.data.session.user.email || "";
+    var iniciais = email.slice(0, 2).toUpperCase();
+    document.getElementById("userAvatar").textContent = iniciais;
+
+    await carregarCategorias();
+    await carregarProdutos();
+});
+
+// ── CATEGORIAS ────────────────────────────────────────────
+async function carregarCategorias() {
+    var res = await supabaseClient.from("categorias").select("*").order("nome");
+    if (res.error) { console.error(res.error); return; }
+    todasCategorias = res.data || [];
+
+    var sel = document.getElementById("produtoCategoria");
+    sel.innerHTML = '<option value="">Selecione...</option>';
+    todasCategorias.forEach(function(c) {
+        sel.innerHTML += '<option value="' + c.id + '">' + c.nome + '</option>';
+    });
+}
+
+// ── PRODUTOS ──────────────────────────────────────────────
+async function carregarProdutos() {
+    var tbody = document.getElementById("tabelaProdutos");
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">Carregando...</div></td></tr>';
+
+    var res = await supabaseClient
+        .from("produtos")
+        .select("*, categorias(nome)")
+        .eq("ativo", true)
+        .order("nome");
+
+    if (res.error) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">Erro ao carregar produtos.</div></td></tr>';
+        return;
+    }
+
+    todosProdutos = res.data || [];
+    renderizarProdutos(todosProdutos);
+}
+
+function renderizarProdutos(lista) {
+    var tbody = document.getElementById("tabelaProdutos");
+
+    if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">' +
+            '<svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>' +
+            'Nenhum produto cadastrado. Clique em "Novo produto" para começar.' +
+        '</div></td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = "";
+    lista.forEach(function(p) {
+        var estoqueBaixo = p.estoque_minimo > 0 && p.estoque_atual <= p.estoque_minimo;
+        var classeEstoque = estoqueBaixo ? "estoque-badge estoque-baixo" : "estoque-badge";
+        var catNome = p.categorias ? p.categorias.nome : "—";
+        var valor = parseFloat(p.valor_venda || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+        tbody.innerHTML += '<tr>' +
+            '<td class="td-codigo">' + (p.codigo || "—") + '</td>' +
+            '<td class="td-nome"><strong>' + p.nome + '</strong><span>' + (p.marca || "") + '</span></td>' +
+            '<td class="td-categoria">' + catNome + '</td>' +
+            '<td>' + (p.unidade || "UN") + '</td>' +
+            '<td style="text-align:right;font-weight:600;">' + valor + '</td>' +
+            '<td style="text-align:right;"><span class="' + classeEstoque + '">' + (p.estoque_atual || 0) + '</span></td>' +
+            '<td><div class="td-acoes">' +
+                '<button class="btn-edit" onclick="editarProduto(' + p.id + ')" title="Editar">' +
+                    '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+                '</button>' +
+                '<button class="btn-danger" onclick="excluirProduto(' + p.id + ', \'' + p.nome.replace(/'/g, "\\'") + '\')" title="Excluir">' +
+                    '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>' +
+                '</button>' +
+            '</div></td>' +
+        '</tr>';
+    });
+}
+
+function filtrarProdutos() {
+    var busca = document.getElementById("buscaProduto").value.toLowerCase();
+    if (!busca) { renderizarProdutos(todosProdutos); return; }
+    var filtrados = todosProdutos.filter(function(p) {
+        return (p.nome || "").toLowerCase().includes(busca) ||
+               (p.codigo || "").toLowerCase().includes(busca) ||
+               (p.marca || "").toLowerCase().includes(busca);
+    });
+    renderizarProdutos(filtrados);
+}
+
+// ── MODAL ─────────────────────────────────────────────────
+function abrirModalProduto() {
+    document.getElementById("modalProdutoTitulo").textContent = "Novo Produto";
+    document.getElementById("produtoId").value = "";
+    document.getElementById("produtoCodigo").value = "";
+    document.getElementById("produtoNome").value = "";
+    document.getElementById("produtoMarca").value = "";
+    document.getElementById("produtoCategoria").value = "";
+    document.getElementById("produtoUnidade").value = "UN";
+    document.getElementById("produtoValor").value = "";
+    document.getElementById("produtoEstoque").value = "";
+    document.getElementById("produtoEstoqueMin").value = "";
+    document.getElementById("modalProduto").classList.add("open");
+    document.getElementById("produtoCodigo").focus();
+}
+
+function fecharModalProduto() {
+    document.getElementById("modalProduto").classList.remove("open");
+}
+
+function editarProduto(id) {
+    var p = todosProdutos.find(function(x) { return x.id === id; });
+    if (!p) return;
+
+    document.getElementById("modalProdutoTitulo").textContent = "Editar Produto";
+    document.getElementById("produtoId").value     = p.id;
+    document.getElementById("produtoCodigo").value = p.codigo || "";
+    document.getElementById("produtoNome").value   = p.nome   || "";
+    document.getElementById("produtoMarca").value  = p.marca  || "";
+    document.getElementById("produtoUnidade").value = p.unidade || "UN";
+    document.getElementById("produtoValor").value  = p.valor_venda || "";
+    document.getElementById("produtoEstoque").value    = p.estoque_atual || "";
+    document.getElementById("produtoEstoqueMin").value = p.estoque_minimo || "";
+
+    // Categoria
+    if (p.categoria_id) {
+        document.getElementById("produtoCategoria").value = p.categoria_id;
+    }
+
+    document.getElementById("modalProduto").classList.add("open");
+}
+
+async function salvarProduto() {
+    var codigo    = document.getElementById("produtoCodigo").value.trim();
+    var nome      = document.getElementById("produtoNome").value.trim();
+    var marca     = document.getElementById("produtoMarca").value.trim();
+    var catId     = document.getElementById("produtoCategoria").value;
+    var unidade   = document.getElementById("produtoUnidade").value;
+    var valor     = parseFloat(document.getElementById("produtoValor").value) || 0;
+    var estoque   = parseFloat(document.getElementById("produtoEstoque").value) || 0;
+    var estoqueMin = parseFloat(document.getElementById("produtoEstoqueMin").value) || 0;
+    var id        = document.getElementById("produtoId").value;
+
+    if (!codigo || !nome) {
+        toast("Preencha o código e o nome do produto.");
+        return;
+    }
+
+    var dados = {
+        codigo, nome, marca,
+        categoria_id: catId || null,
+        unidade, valor_venda: valor,
+        estoque_atual: estoque,
+        estoque_minimo: estoqueMin,
+        updated_at: new Date().toISOString()
+    };
+
+    var res;
+    if (id) {
+        res = await supabaseClient.from("produtos").update(dados).eq("id", id);
+    } else {
+        res = await supabaseClient.from("produtos").insert([{ ...dados, ativo: true }]);
+    }
+
+    if (res.error) {
+        console.error(res.error);
+        toast("Erro ao salvar produto. Verifique se o código já existe.");
+        return;
+    }
+
+    toast(id ? "✅ Produto atualizado!" : "✅ Produto cadastrado!");
+    fecharModalProduto();
+    carregarProdutos();
+}
+
+async function excluirProduto(id, nome) {
+    if (!confirm('Excluir o produto "' + nome + '"? Esta ação não pode ser desfeita.')) return;
+
+    var res = await supabaseClient
+        .from("produtos")
+        .update({ ativo: false })
+        .eq("id", id);
+
+    if (res.error) { toast("Erro ao excluir produto."); return; }
+
+    toast("Produto removido.");
+    carregarProdutos();
+}
+
+// Fecha modal ao clicar no fundo
+document.getElementById("modalProduto").addEventListener("click", function(e) {
+    if (e.target === this) fecharModalProduto();
+});
+
+// ── TOAST ─────────────────────────────────────────────────
+function toast(msg) {
+    var t = document.getElementById("pdv-toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function() { t.classList.remove("show"); }, 2500);
+}
+
+</script>
+</body>
+</html>

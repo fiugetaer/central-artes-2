@@ -1,0 +1,503 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento | Portal Comercial GACC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pdv-base.css">
+    <style>
+        .orc-layout { display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start; }
+        .orc-left { display:flex; flex-direction:column; gap:20px; }
+        .orc-right { position:sticky; top:76px; display:flex; flex-direction:column; gap:12px; }
+        .section-card { background:white; border:1px solid #e2e8f0; border-radius:12px; padding:24px; }
+        .section-card h3 { font-size:15px; font-weight:700; color:#0f172a; margin-bottom:18px; }
+        .itens-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+        .itens-table { width:100%; border-collapse:collapse; }
+        .itens-table th { font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.05em; padding:8px 10px; border-bottom:1px solid #f1f5f9; text-align:left; }
+        .itens-table td { padding:10px; border-bottom:1px solid #f8fafc; vertical-align:middle; }
+        .itens-table tbody tr:last-child td { border-bottom:none; }
+        .itens-table input { border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; font-size:13px; width:100%; background:#fafafa; outline:none; font-family:inherit; }
+        .itens-table input:focus { border-color:#2563eb; background:white; }
+        .td-desc input { min-width:180px; }
+        .td-num { width:80px; }
+        .td-num input { text-align:right; }
+        .td-total { font-weight:700; color:#0f172a; font-size:13px; white-space:nowrap; text-align:right; }
+        .empty-itens { padding:32px; text-align:center; color:#94a3b8; font-size:14px; }
+        .resumo-linha { display:flex; justify-content:space-between; align-items:center; padding:8px 0; font-size:14px; color:#64748b; border-bottom:1px solid #f1f5f9; }
+        .resumo-linha:last-child { border-bottom:none; }
+        .resumo-total { display:flex; justify-content:space-between; align-items:center; padding:12px 0 0; font-size:16px; font-weight:700; color:#0f172a; }
+        .resumo-total span:last-child { color:#2563eb; font-size:18px; }
+        .acoes-status { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .btn-status { display:flex; align-items:center; justify-content:center; gap:6px; padding:9px 12px; border-radius:8px; border:1px solid #e2e8f0; background:white; font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; }
+        .btn-status:hover { background:#f8fafc; }
+        .btn-status.enviar  { color:#2563eb; border-color:#bfdbfe; }
+        .btn-status.aprovar { color:#16a34a; border-color:#bbf7d0; }
+        .btn-status.rejeitar{ color:#dc2626; border-color:#fecaca; }
+        .btn-status.cancelar{ color:#94a3b8; border-color:#e2e8f0; }
+        .btn-status svg { width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
+        .status-badge { display:inline-flex; align-items:center; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700; }
+        .badge-elaboracao { background:#f1f5f9; color:#64748b; }
+        .badge-enviado    { background:#eff6ff; color:#2563eb; }
+        .badge-aprovado   { background:#f0fdf4; color:#16a34a; }
+        .badge-rejeitado  { background:#fef2f2; color:#dc2626; }
+        .badge-cancelado  { background:#f8fafc; color:#94a3b8; }
+        .select-cliente { width:100%; padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:14px; color:#0f172a; background:#fafafa; outline:none; cursor:pointer; }
+        .select-cliente:focus { border-color:#2563eb; background:white; }
+        .topbar-orc { display:flex; align-items:center; gap:14px; }
+        .topbar-orc a { color:#64748b; text-decoration:none; font-size:22px; line-height:1; }
+        .topbar-orc a:hover { color:#0f172a; }
+        .modal-busca-prod { max-width:620px; }
+        .prod-lista-item { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f1f5f9; cursor:pointer; transition:background .1s; border-radius:8px; padding:10px 12px; }
+        .prod-lista-item:hover { background:#f8fafc; }
+        .prod-lista-item strong { display:block; font-size:14px; color:#0f172a; }
+        .prod-lista-item span { font-size:12px; color:#94a3b8; }
+        .prod-lista-item .prod-preco { font-size:14px; font-weight:700; color:#2563eb; white-space:nowrap; }
+        @media(max-width:900px) { .orc-layout { grid-template-columns:1fr; } .orc-right { position:static; } }
+    </style>
+</head>
+<body>
+<aside class="pdv-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon"><svg viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <div class="brand-text"><h3>Portal Comercial</h3><span>GACC-AM</span></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="pdv-dashboard.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
+        <a href="pdv-orcamentos.html" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Orçamentos</span></a>
+        <a href="pdv-clientes.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Clientes</span></a>
+        <a href="pdv-produtos.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>Produtos</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="pdv.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M15 3H19a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H15"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span>Sair do Portal</span></a>
+    </div>
+</aside>
+
+<main class="pdv-main">
+    <div class="pdv-topbar">
+        <div class="topbar-orc">
+            <a href="pdv-orcamentos.html" title="Voltar">←</a>
+            <div>
+                <strong id="tituloOrc" style="font-size:16px;font-weight:700;color:#0f172a;">Novo Orçamento</strong>
+                <div style="font-size:12px;color:#94a3b8;margin-top:1px;">Elaboração de orçamento</div>
+            </div>
+            <span id="statusBadge" class="status-badge badge-elaboracao">Em elaboração</span>
+        </div>
+        <div class="topbar-actions">
+            <button class="btn-secondary" onclick="salvar()" style="padding:8px 16px;">
+                <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#374151;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Salvar
+            </button>
+            <div class="avatar" id="userAvatar">AD</div>
+        </div>
+    </div>
+
+    <div class="pdv-content">
+        <div class="orc-layout">
+            <!-- ESQUERDA -->
+            <div class="orc-left">
+                <!-- INFORMAÇÕES -->
+                <div class="section-card">
+                    <h3>Informações</h3>
+                    <div class="form-grid">
+                        <div class="campo full">
+                            <label>Cliente</label>
+                            <select id="oCliente" class="select-cliente"><option value="">Selecionar cliente...</option></select>
+                        </div>
+                        <div class="campo">
+                            <label>Responsável *</label>
+                            <input type="text" id="oResponsavel" placeholder="Nome do responsável">
+                        </div>
+                        <div class="campo">
+                            <label>Status</label>
+                            <select id="oStatus" class="select-cliente" onchange="atualizarStatusBadge()">
+                                <option value="elaboracao">Em elaboração</option>
+                                <option value="enviado">Enviado</option>
+                                <option value="aprovado">Aprovado</option>
+                                <option value="rejeitado">Rejeitado</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="campo">
+                            <label>Data</label>
+                            <input type="date" id="oData">
+                        </div>
+                        <div class="campo">
+                            <label>Validade</label>
+                            <input type="date" id="oValidade">
+                        </div>
+                        <div class="campo">
+                            <label>Desconto geral (%)</label>
+                            <input type="number" id="oDesconto" value="0" min="0" max="100" step="0.01" oninput="calcularResumo()">
+                        </div>
+                        <div class="campo">
+                            <label>Impostos (%)</label>
+                            <input type="number" id="oImpostos" value="0" min="0" max="100" step="0.01" oninput="calcularResumo()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ITENS -->
+                <div class="section-card">
+                    <div class="itens-header">
+                        <h3 style="margin:0">Itens</h3>
+                        <button class="btn-primary" onclick="abrirBuscaProduto()">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Adicionar produto
+                        </button>
+                    </div>
+                    <table class="itens-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Descrição</th>
+                                <th class="td-num" style="text-align:right">Qtd</th>
+                                <th class="td-num" style="text-align:right">Vl. Unit.</th>
+                                <th class="td-num" style="text-align:right">Desc.%</th>
+                                <th style="text-align:right">Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbItens">
+                            <tr id="trVazio"><td colspan="7"><div class="empty-itens">Nenhum item adicionado</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- CONDIÇÕES E OBSERVAÇÕES -->
+                <div class="section-card">
+                    <h3>Condições e observações</h3>
+                    <div class="form-grid cols-1">
+                        <div class="campo">
+                            <label>Condições de pagamento</label>
+                            <textarea id="oCondicoes" rows="3" placeholder="Ex: 50% na aprovação, 50% na entrega."></textarea>
+                        </div>
+                        <div class="campo">
+                            <label>Observações</label>
+                            <textarea id="oObs" rows="3" placeholder="Observações adicionais..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DIREITA -->
+            <div class="orc-right">
+                <!-- RESUMO -->
+                <div class="section-card">
+                    <h3>Resumo</h3>
+                    <div class="resumo-linha"><span>Subtotal</span><span id="rSubtotal">R$ 0,00</span></div>
+                    <div class="resumo-linha"><span id="rDescontoLabel">Desconto (0%)</span><span id="rDesconto" style="color:#dc2626;">- R$ 0,00</span></div>
+                    <div class="resumo-linha"><span id="rImpostosLabel">Impostos (0%)</span><span id="rImpostos">R$ 0,00</span></div>
+                    <div class="resumo-total"><span>TOTAL</span><span id="rTotal">R$ 0,00</span></div>
+                </div>
+
+                <!-- AÇÕES DE STATUS -->
+                <div class="section-card">
+                    <h3>Ações</h3>
+                    <div class="acoes-status">
+                        <button class="btn-status enviar" onclick="mudarStatus('enviado')">
+                            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Enviar
+                        </button>
+                        <button class="btn-status aprovar" onclick="mudarStatus('aprovado')">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Aprovar
+                        </button>
+                        <button class="btn-status rejeitar" onclick="mudarStatus('rejeitado')">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Rejeitar
+                        </button>
+                        <button class="btn-status cancelar" onclick="mudarStatus('cancelado')">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- MODAL BUSCA PRODUTO -->
+<div class="modal-overlay" id="modalBuscaProd">
+    <div class="modal modal-busca-prod">
+        <div class="modal-header">
+            <h2>Adicionar Produto</h2>
+            <button class="modal-close" onclick="fecharBuscaProduto()">×</button>
+        </div>
+        <div class="search-box" style="margin-bottom:16px;">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="buscaProdModal" placeholder="Buscar por código, nome ou marca..." oninput="filtrarProdModal()">
+        </div>
+        <div id="listaProdModal" style="max-height:360px;overflow-y:auto;"></div>
+    </div>
+</div>
+
+<div id="pdv-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+let orcId = null;
+let itens = [];
+let todosProdutos = [];
+let orcNumero = "";
+
+const STATUS_LABEL = { elaboracao:"Em elaboração", enviado:"Enviado", aprovado:"Aprovado", rejeitado:"Rejeitado", cancelado:"Cancelado" };
+const STATUS_BADGE = { elaboracao:"badge-elaboracao", enviado:"badge-enviado", aprovado:"badge-aprovado", rejeitado:"badge-rejeitado", cancelado:"badge-cancelado" };
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const sess = await supabaseClient.auth.getSession();
+    if (!sess.data.session) { window.location.href = "login.html"; return; }
+    const email = sess.data.session.user.email || "";
+    document.getElementById("userAvatar").textContent = email.slice(0,2).toUpperCase();
+    document.getElementById("oResponsavel").value = email.split("@")[0];
+
+    // Datas padrão
+    const hoje = new Date().toISOString().split("T")[0];
+    const val  = new Date(Date.now() + 15*24*60*60*1000).toISOString().split("T")[0];
+    document.getElementById("oData").value    = hoje;
+    document.getElementById("oValidade").value = val;
+
+    await Promise.all([carregarClientes(), carregarProdutos()]);
+
+    const params = new URLSearchParams(window.location.search);
+    orcId = params.get("id");
+    if (orcId) await carregarOrcamento(orcId);
+});
+
+async function carregarClientes() {
+    const res = await supabaseClient.from("clientes").select("id, nome").eq("ativo", true).order("nome");
+    if (res.error || !res.data) return;
+    const sel = document.getElementById("oCliente");
+    res.data.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.nome}</option>`);
+}
+
+async function carregarProdutos() {
+    const res = await supabaseClient.from("produtos").select("*").eq("ativo", true).order("nome");
+    todosProdutos = res.data || [];
+}
+
+async function carregarOrcamento(id) {
+    const [resOrc, resItens] = await Promise.all([
+        supabaseClient.from("orcamentos").select("*, clientes(id,nome)").eq("id", id).single(),
+        supabaseClient.from("orcamento_itens").select("*").eq("orcamento_id", id).order("id")
+    ]);
+
+    if (resOrc.error || !resOrc.data) { toast("Orçamento não encontrado."); return; }
+    const o = resOrc.data;
+    orcNumero = o.numero;
+
+    document.getElementById("tituloOrc").textContent = "Orçamento " + o.numero;
+    document.getElementById("oCliente").value    = o.cliente_id || "";
+    document.getElementById("oResponsavel").value = o.responsavel || "";
+    document.getElementById("oStatus").value     = o.status || "elaboracao";
+    document.getElementById("oData").value       = o.data || "";
+    document.getElementById("oValidade").value   = o.validade || "";
+    document.getElementById("oDesconto").value   = o.desconto_geral || 0;
+    document.getElementById("oImpostos").value   = o.impostos || 0;
+    document.getElementById("oCondicoes").value  = o.condicoes_pagamento || "";
+    document.getElementById("oObs").value        = o.observacoes || "";
+    atualizarStatusBadge();
+
+    itens = (resItens.data || []).map(i => ({
+        id: i.id, produtoId: i.produto_id,
+        codigo: i.codigo, descricao: i.descricao,
+        qtd: parseFloat(i.quantidade||1),
+        valor: parseFloat(i.valor_unitario||0),
+        desconto: parseFloat(i.desconto||0)
+    }));
+    renderizarItens();
+}
+
+// ── ITENS ──────────────────────────────────────────
+function abrirBuscaProduto() {
+    document.getElementById("buscaProdModal").value = "";
+    filtrarProdModal();
+    document.getElementById("modalBuscaProd").classList.add("open");
+    document.getElementById("buscaProdModal").focus();
+}
+
+function fecharBuscaProduto() {
+    document.getElementById("modalBuscaProd").classList.remove("open");
+}
+
+function filtrarProdModal() {
+    const busca = document.getElementById("buscaProdModal").value.toLowerCase();
+    const lista = busca ? todosProdutos.filter(p =>
+        (p.nome||"").toLowerCase().includes(busca) ||
+        (p.codigo||"").toLowerCase().includes(busca) ||
+        (p.marca||"").toLowerCase().includes(busca)
+    ) : todosProdutos.slice(0, 30);
+
+    const el = document.getElementById("listaProdModal");
+    if (!lista.length) { el.innerHTML = '<p style="text-align:center;color:#94a3b8;padding:20px;font-size:14px;">Nenhum produto encontrado.</p>'; return; }
+
+    el.innerHTML = lista.map(p => `
+        <div class="prod-lista-item" onclick="adicionarProduto(${p.id})">
+            <div>
+                <strong>${p.nome} <span style="font-size:11px;color:#94a3b8;font-weight:400;">${p.codigo||""}</span></strong>
+                <span>${p.marca||""} · ${p.unidade||"UN"} · Estoque: ${p.estoque_atual||0}</span>
+            </div>
+            <span class="prod-preco">${fmt(p.valor_venda)}</span>
+        </div>`).join("");
+}
+
+function adicionarProduto(prodId) {
+    const p = todosProdutos.find(x => x.id === prodId);
+    if (!p) return;
+    itens.push({ id: null, produtoId: p.id, codigo: p.codigo||"", descricao: p.nome, qtd: 1, valor: parseFloat(p.valor_venda||0), desconto: 0 });
+    renderizarItens();
+    fecharBuscaProduto();
+}
+
+function renderizarItens() {
+    const tbody = document.getElementById("tbItens");
+    const trVazio = document.getElementById("trVazio");
+
+    // Remove linhas antigas (menos o trVazio)
+    Array.from(tbody.querySelectorAll("tr.item-row")).forEach(r => r.remove());
+
+    if (!itens.length) { trVazio.style.display = ""; calcularResumo(); return; }
+    trVazio.style.display = "none";
+
+    itens.forEach((item, i) => {
+        const total = item.qtd * item.valor * (1 - item.desconto/100);
+        const tr = document.createElement("tr");
+        tr.className = "item-row";
+        tr.innerHTML = `
+            <td class="td-num"><input type="text" value="${item.codigo}" onchange="itens[${i}].codigo=this.value" style="width:70px;"></td>
+            <td class="td-desc"><input type="text" value="${item.descricao}" onchange="itens[${i}].descricao=this.value"></td>
+            <td class="td-num"><input type="number" value="${item.qtd}" min="0.001" step="0.001" oninput="itens[${i}].qtd=parseFloat(this.value)||0;atualizarLinha(${i})"></td>
+            <td class="td-num"><input type="number" value="${item.valor}" min="0" step="0.01" oninput="itens[${i}].valor=parseFloat(this.value)||0;atualizarLinha(${i})"></td>
+            <td class="td-num"><input type="number" value="${item.desconto}" min="0" max="100" step="0.01" oninput="itens[${i}].desconto=parseFloat(this.value)||0;atualizarLinha(${i})"></td>
+            <td class="td-total" id="totalItem${i}">${fmt(total)}</td>
+            <td><button class="btn-danger" onclick="removerItem(${i})" title="Remover"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></td>`;
+        tbody.insertBefore(tr, trVazio);
+    });
+
+    calcularResumo();
+}
+
+function atualizarLinha(i) {
+    const total = itens[i].qtd * itens[i].valor * (1 - itens[i].desconto/100);
+    const el = document.getElementById("totalItem"+i);
+    if (el) el.textContent = fmt(total);
+    calcularResumo();
+}
+
+function removerItem(i) {
+    itens.splice(i, 1);
+    renderizarItens();
+}
+
+function calcularResumo() {
+    const subtotal = itens.reduce((s, item) => s + item.qtd * item.valor * (1 - item.desconto/100), 0);
+    const descPct  = parseFloat(document.getElementById("oDesconto").value) || 0;
+    const impPct   = parseFloat(document.getElementById("oImpostos").value) || 0;
+    const descVal  = subtotal * descPct / 100;
+    const impVal   = (subtotal - descVal) * impPct / 100;
+    const total    = subtotal - descVal + impVal;
+
+    document.getElementById("rSubtotal").textContent      = fmt(subtotal);
+    document.getElementById("rDescontoLabel").textContent = `Desconto (${descPct}%)`;
+    document.getElementById("rDesconto").textContent      = `- ${fmt(descVal)}`;
+    document.getElementById("rImpostosLabel").textContent = `Impostos (${impPct}%)`;
+    document.getElementById("rImpostos").textContent      = fmt(impVal);
+    document.getElementById("rTotal").textContent         = fmt(total);
+}
+
+// ── SALVAR ────────────────────────────────────────
+async function salvar() {
+    const responsavel = document.getElementById("oResponsavel").value.trim();
+    if (!responsavel) { toast("Informe o responsável pelo orçamento."); return; }
+
+    const subtotal = itens.reduce((s, i) => s + i.qtd * i.valor * (1 - i.desconto/100), 0);
+    const descPct  = parseFloat(document.getElementById("oDesconto").value) || 0;
+    const impPct   = parseFloat(document.getElementById("oImpostos").value) || 0;
+    const descVal  = subtotal * descPct / 100;
+    const impVal   = (subtotal - descVal) * impPct / 100;
+    const total    = subtotal - descVal + impVal;
+
+    const dados = {
+        cliente_id:          document.getElementById("oCliente").value || null,
+        responsavel,
+        status:              document.getElementById("oStatus").value,
+        data:                document.getElementById("oData").value,
+        validade:            document.getElementById("oValidade").value,
+        desconto_geral:      descPct,
+        impostos:            impPct,
+        condicoes_pagamento: document.getElementById("oCondicoes").value.trim(),
+        observacoes:         document.getElementById("oObs").value.trim(),
+        subtotal:            parseFloat(subtotal.toFixed(2)),
+        total:               parseFloat(total.toFixed(2)),
+        updated_at:          new Date().toISOString()
+    };
+
+    let idFinal = orcId;
+
+    if (!orcId) {
+        // Gera número automático
+        const { count } = await supabaseClient.from("orcamentos").select("*", { count:"exact", head:true });
+        const num = "#" + String((count||0) + 1001).padStart(4,"0");
+        dados.numero = num;
+        const res = await supabaseClient.from("orcamentos").insert([dados]).select().single();
+        if (res.error) { console.error(res.error); toast("Erro ao criar orçamento."); return; }
+        idFinal = res.data.id;
+        orcId = idFinal;
+        orcNumero = num;
+        document.getElementById("tituloOrc").textContent = "Orçamento " + num;
+        window.history.replaceState({}, "", "?id=" + idFinal);
+    } else {
+        const res = await supabaseClient.from("orcamentos").update(dados).eq("id", orcId);
+        if (res.error) { console.error(res.error); toast("Erro ao salvar orçamento."); return; }
+    }
+
+    // Salva itens: deleta os antigos e reinsere
+    await supabaseClient.from("orcamento_itens").delete().eq("orcamento_id", idFinal);
+    if (itens.length) {
+        const itensParaSalvar = itens.map(i => ({
+            orcamento_id:  idFinal,
+            produto_id:    i.produtoId || null,
+            codigo:        i.codigo,
+            descricao:     i.descricao,
+            quantidade:    i.qtd,
+            valor_unitario: i.valor,
+            desconto:      i.desconto,
+            total:         parseFloat((i.qtd * i.valor * (1 - i.desconto/100)).toFixed(2))
+        }));
+        const resItens = await supabaseClient.from("orcamento_itens").insert(itensParaSalvar);
+        if (resItens.error) { console.error(resItens.error); toast("Erro ao salvar itens."); return; }
+    }
+
+    toast("✅ Orçamento salvo!");
+}
+
+async function mudarStatus(novoStatus) {
+    if (!orcId) { await salvar(); if (!orcId) return; }
+    const res = await supabaseClient.from("orcamentos").update({ status: novoStatus, updated_at: new Date().toISOString() }).eq("id", orcId);
+    if (res.error) { toast("Erro ao alterar status."); return; }
+    document.getElementById("oStatus").value = novoStatus;
+    atualizarStatusBadge();
+    toast("✅ Status alterado para " + STATUS_LABEL[novoStatus]);
+}
+
+function atualizarStatusBadge() {
+    const status = document.getElementById("oStatus").value;
+    const badge  = document.getElementById("statusBadge");
+    badge.className = "status-badge " + (STATUS_BADGE[status] || "badge-elaboracao");
+    badge.textContent = STATUS_LABEL[status] || status;
+}
+
+document.getElementById("modalBuscaProd").addEventListener("click", function(e) {
+    if (e.target === this) fecharBuscaProduto();
+});
+
+const fmt = v => parseFloat(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+function toast(msg) {
+    const t = document.getElementById("pdv-toast");
+    t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => t.classList.remove("show"), 2500);
+}
+</script>
+</body>
+</html>

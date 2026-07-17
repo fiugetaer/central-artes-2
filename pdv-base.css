@@ -1,0 +1,611 @@
+/* ═══════════════════════════════════════════
+   PDV BASE — Portal Comercial GACC-AM
+   ═══════════════════════════════════════════ */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f1f5f9;
+    color: #0f172a;
+    min-height: 100vh;
+    display: flex;
+}
+
+/* ── SIDEBAR ─────────────────────────────── */
+.pdv-sidebar {
+    width: 220px;
+    min-height: 100vh;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 18px;
+    border-bottom: 1px solid #1e293b;
+}
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    background: #2563eb;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.brand-icon svg {
+    width: 20px; height: 20px;
+    stroke: white; fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.brand-text h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+}
+
+.brand-text span {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* Nav */
+.sidebar-nav {
+    flex: 1;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all .15s;
+    position: relative;
+}
+
+.nav-item svg {
+    width: 18px; height: 18px;
+    stroke: currentColor; fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+.nav-item:hover {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+
+.nav-item.active {
+    background: #2563eb;
+    color: white;
+}
+
+.nav-badge {
+    font-size: 10px;
+    font-weight: 700;
+    background: #334155;
+    color: #64748b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: auto;
+    letter-spacing: .03em;
+}
+
+.sidebar-footer {
+    padding: 14px 10px;
+    border-top: 1px solid #1e293b;
+}
+
+.sidebar-footer .nav-item {
+    color: #475569;
+}
+
+/* ── CONTEÚDO ────────────────────────────── */
+.pdv-main {
+    margin-left: 220px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.pdv-topbar {
+    height: 56px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.topbar-label {
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-icon {
+    width: 34px; height: 34px;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: background .15s;
+}
+
+.btn-icon:hover { background: #f1f5f9; }
+
+.btn-icon svg {
+    width: 18px; height: 18px;
+    stroke: currentColor; fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.avatar {
+    width: 34px; height: 34px;
+    background: #2563eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+}
+
+.pdv-content {
+    padding: 28px;
+    flex: 1;
+}
+
+/* ── PÁGINA HEADER ───────────────────────── */
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.page-header-left h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.3px;
+    margin-bottom: 3px;
+}
+
+.page-header-left p {
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* ── BOTÕES ──────────────────────────────── */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s;
+    white-space: nowrap;
+}
+
+.btn-primary:hover { background: #1d4ed8; }
+
+.btn-primary svg {
+    width: 16px; height: 16px;
+    stroke: white; fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: white;
+    color: #374151;
+    border: 1px solid #e2e8f0;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .15s;
+}
+
+.btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+.btn-danger {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+}
+
+.btn-danger:hover { background: #fef2f2; }
+
+.btn-danger svg {
+    width: 16px; height: 16px;
+    stroke: currentColor; fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.btn-edit {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+}
+
+.btn-edit:hover { background: #f1f5f9; color: #2563eb; }
+
+.btn-edit svg {
+    width: 16px; height: 16px;
+    stroke: currentColor; fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ── TABELA ──────────────────────────────── */
+.table-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.table-toolbar {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 14px;
+    max-width: 360px;
+    width: 100%;
+}
+
+.search-box svg {
+    width: 16px; height: 16px;
+    stroke: #94a3b8; fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    flex-shrink: 0;
+}
+
+.search-box input {
+    border: none;
+    background: none;
+    font-size: 14px;
+    color: #374151;
+    width: 100%;
+    outline: none;
+}
+
+.search-box input::placeholder { color: #94a3b8; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #fafafa;
+}
+
+tbody tr {
+    border-bottom: 1px solid #f8fafc;
+    transition: background .1s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fafafa; }
+
+tbody td {
+    padding: 14px 20px;
+    font-size: 14px;
+    color: #374151;
+    vertical-align: middle;
+}
+
+.td-codigo {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    font-family: 'Courier New', monospace;
+}
+
+.td-nome strong {
+    display: block;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 1px;
+}
+
+.td-nome span {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.td-categoria {
+    font-size: 13px;
+    color: #2563eb;
+    font-weight: 500;
+}
+
+.td-acoes {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+.estoque-badge {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.estoque-baixo { color: #ef4444; }
+
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.empty-state svg {
+    width: 40px; height: 40px;
+    stroke: #cbd5e1; fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    margin-bottom: 12px;
+}
+
+/* ── MODAL ───────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,.15);
+    transform: translateY(10px);
+    transition: transform .2s;
+}
+
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.modal-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.modal-close {
+    width: 32px; height: 32px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 18px;
+    transition: background .15s;
+}
+
+.modal-close:hover { background: #e2e8f0; }
+
+/* ── FORMULÁRIO ──────────────────────────── */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-grid.cols-1 { grid-template-columns: 1fr; }
+.form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.campo.full { grid-column: 1 / -1; }
+
+.campo label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #0f172a;
+    background: #fafafa;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    transition: border-color .15s, background .15s;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+}
+
+.campo textarea { resize: vertical; min-height: 80px; }
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* ── TOAST ───────────────────────────────── */
+#pdv-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: #0f172a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .25s;
+    z-index: 9999;
+    white-space: nowrap;
+}
+
+#pdv-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── RESPONSIVO ──────────────────────────── */
+@media (max-width: 900px) {
+    .pdv-sidebar { width: 64px; }
+    .brand-text, .nav-item span, .nav-badge { display: none; }
+    .sidebar-brand { justify-content: center; padding: 16px; }
+    .nav-item { justify-content: center; padding: 12px; }
+    .pdv-main { margin-left: 64px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+    .pdv-content { padding: 16px; }
+    .page-header { flex-direction: column; align-items: stretch; }
+    .form-grid.cols-3 { grid-template-columns: 1fr; }
+}

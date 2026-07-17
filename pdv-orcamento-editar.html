@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="pagina-protegida" content="true">
+    <title>Orçamento | Portal Comercial GACC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pdv-base.css">
+    <!-- Biblioteca de geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        .orc-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+        .orc-header a { color:#64748b; text-decoration:none; font-size:22px; }
+        .orc-header a:hover { color:#0f172a; }
+        .orc-titulo { flex:1; }
+        .orc-titulo h1 { font-size:24px; font-weight:700; color:#0f172a; display:flex; align-items:center; gap:12px; }
+        .orc-titulo p { font-size:13px; color:#94a3b8; margin-top:2px; }
+        .orc-header-actions { display:flex; gap:10px; }
+
+        .secao { background:white; border:1px solid #e2e8f0; border-radius:12px; padding:24px; margin-bottom:20px; }
+        .secao h2 { font-size:15px; font-weight:700; color:#0f172a; margin-bottom:18px; }
+
+        .itens-table { width:100%; border-collapse:collapse; margin-top:8px; }
+        .itens-table th { font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.05em; padding:8px 10px; text-align:left; border-bottom:1px solid #f1f5f9; }
+        .itens-table td { padding:10px; border-bottom:1px solid #f8fafc; vertical-align:middle; }
+        .itens-table tr:last-child td { border-bottom:none; }
+        .itens-table input { border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; font-size:13px; width:100%; outline:none; background:#fafafa; }
+        .itens-table input:focus { border-color:#2563eb; background:white; }
+        .btn-remover-item { background:none; border:none; color:#ef4444; cursor:pointer; padding:4px; border-radius:4px; }
+        .btn-remover-item:hover { background:#fef2f2; }
+        .btn-remover-item svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; }
+
+        .rodape-grid { display:grid; grid-template-columns:1fr 320px; gap:20px; }
+        .resumo-box { background:#f8fafc; border-radius:10px; padding:20px; }
+        .resumo-linha { display:flex; justify-content:space-between; align-items:center; padding:7px 0; font-size:14px; color:#374151; border-bottom:1px solid #e2e8f0; }
+        .resumo-linha:last-child { border-bottom:none; }
+        .resumo-total { font-size:18px; font-weight:700; color:#2563eb; }
+        .resumo-total-label { font-size:18px; font-weight:700; color:#0f172a; }
+
+        .acoes-status { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+        .btn-status { padding:9px 16px; border-radius:8px; border:1px solid; font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; display:inline-flex; align-items:center; gap:6px; }
+        .btn-status svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; }
+        .btn-enviar  { color:#d97706; border-color:#fde68a; background:#fffbeb; } .btn-enviar:hover  { background:#fef3c7; }
+        .btn-aprovar { color:#16a34a; border-color:#bbf7d0; background:#f0fdf4; } .btn-aprovar:hover { background:#dcfce7; }
+        .btn-rejeitar{ color:#dc2626; border-color:#fecaca; background:#fef2f2; } .btn-rejeitar:hover{ background:#fee2e2; }
+        .btn-cancelar{ color:#64748b; border-color:#e2e8f0; background:white;   } .btn-cancelar:hover{ background:#f8fafc; }
+
+        .status-badge { font-size:13px; font-weight:600; padding:5px 12px; border-radius:999px; }
+        .s-elaboracao{background:#eff6ff;color:#2563eb;} .s-enviado{background:#fffbeb;color:#d97706;}
+        .s-aprovado{background:#f0fdf4;color:#16a34a;} .s-rejeitado{background:#fef2f2;color:#dc2626;}
+        .s-cancelado{background:#f8fafc;color:#94a3b8;}
+
+        /* Modal busca produto */
+        .produto-lista { max-height:300px; overflow-y:auto; margin-top:12px; }
+        .produto-opcao { padding:12px; border-radius:8px; cursor:pointer; transition:background .1s; display:flex; justify-content:space-between; align-items:center; }
+        .produto-opcao:hover { background:#f1f5f9; }
+        .produto-opcao-info strong { display:block; font-size:14px; color:#0f172a; }
+        .produto-opcao-info span { font-size:12px; color:#94a3b8; }
+        .produto-opcao-preco { font-size:14px; font-weight:700; color:#2563eb; }
+
+        @media(max-width:900px) { .rodape-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+<aside class="pdv-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon"><svg viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <div class="brand-text"><h3>Portal Comercial</h3><span>GACC-AM</span></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="pdv-dashboard.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
+        <a href="pdv-orcamentos.html" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg><span>Orçamentos</span></a>
+        <a href="pdv-clientes.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Clientes</span></a>
+        <a href="pdv-produtos.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>Produtos</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M15 3H19a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H15"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span>Central de Artes</span></a>
+    </div>
+</aside>
+
+<main class="pdv-main">
+    <div class="pdv-topbar">
+        <span class="topbar-label">Portal</span>
+        <div class="topbar-actions"><div class="avatar" id="userAvatar">AD</div></div>
+    </div>
+    <div class="pdv-content">
+
+        <!-- CABEÇALHO DO ORÇAMENTO -->
+        <div class="orc-header">
+            <a href="pdv-orcamentos.html" title="Voltar">←</a>
+            <div class="orc-titulo">
+                <h1 id="tituloOrc">Novo Orçamento <span class="status-badge s-elaboracao" id="badgeStatus">Em elaboração</span></h1>
+                <p>Elaboração de orçamento</p>
+            </div>
+            <div class="orc-header-actions">
+                <button class="btn-secondary" onclick="imprimir()">Imprimir</button>
+                <button class="btn-secondary" onclick="gerarPDF()">PDF</button>
+                <button class="btn-primary" onclick="salvar()">Salvar Orçamento</button>
+            </div>
+        </div>
+
+        <!-- INFORMAÇÕES -->
+        <div class="secao">
+            <h2>Informações</h2>
+            <div class="form-grid cols-3">
+                <div class="campo full" style="grid-column:1/2">
+                    <label>Cliente</label>
+                    <select id="clienteId"><option value="">Selecionar cliente...</option></select>
+                </div>
+                <div class="campo">
+                    <label>Responsável *</label>
+                    <input type="text" id="responsavel" placeholder="Nome do responsável">
+                </div>
+                <div class="campo">
+                    <label>Status</label>
+                    <select id="statusOrc">
+                        <option value="elaboracao">Em elaboração</option>
+                        <option value="enviado">Enviado</option>
+                        <option value="aprovado">Aprovado</option>
+                        <option value="rejeitado">Rejeitado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label>Data</label>
+                    <input type="date" id="dataOrc">
+                </div>
+                <div class="campo">
+                    <label>Validade</label>
+                    <input type="date" id="validadeOrc">
+                </div>
+                <div class="campo">
+                    <label>Desconto geral (%)</label>
+                    <input type="number" id="descontoGeral" value="0" min="0" max="100" step="0.01" oninput="calcular()">
+                </div>
+                <div class="campo">
+                    <label>Impostos (%)</label>
+                    <input type="number" id="impostos" value="0" min="0" max="100" step="0.01" oninput="calcular()">
+                </div>
+            </div>
+        </div>
+
+        <!-- ITENS -->
+        <div class="secao">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <h2 style="margin:0">Itens</h2>
+                <button class="btn-primary" onclick="abrirBuscaProduto()">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Adicionar produto
+                </button>
+            </div>
+            <table class="itens-table">
+                <thead>
+                    <tr>
+                        <th style="width:90px">Código</th>
+                        <th>Descrição</th>
+                        <th style="width:80px">Qtd</th>
+                        <th style="width:110px">Vl. Unit.</th>
+                        <th style="width:80px">Desc. %</th>
+                        <th style="width:110px;text-align:right">Total</th>
+                        <th style="width:40px"></th>
+                    </tr>
+                </thead>
+                <tbody id="tbItens">
+                    <tr id="trVazio"><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;font-size:13px;">Nenhum item adicionado</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- RODAPÉ -->
+        <div class="rodape-grid">
+            <div class="secao" style="margin:0">
+                <h2>Condições e observações</h2>
+                <div class="campo" style="margin-bottom:14px">
+                    <label>Condições de pagamento</label>
+                    <textarea id="condicoes" rows="3" placeholder="Ex.: 50% na aprovação, 50% na entrega."></textarea>
+                </div>
+                <div class="campo">
+                    <label>Observações</label>
+                    <textarea id="observacoes" rows="3" placeholder="Informações adicionais..."></textarea>
+                </div>
+                <div class="acoes-status">
+                    <button class="btn-status btn-enviar"  onclick="mudarStatus('enviado')"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Enviar</button>
+                    <button class="btn-status btn-aprovar" onclick="mudarStatus('aprovado')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Aprovar</button>
+                    <button class="btn-status btn-rejeitar" onclick="mudarStatus('rejeitado')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Rejeitar</button>
+                    <button class="btn-status btn-cancelar" onclick="mudarStatus('cancelado')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Cancelar</button>
+                </div>
+            </div>
+            <div>
+                <div class="resumo-box">
+                    <div class="resumo-linha"><span>Subtotal</span><span id="rSubtotal">R$ 0,00</span></div>
+                    <div class="resumo-linha"><span id="rDescontoLabel">Desconto (0%)</span><span id="rDesconto" style="color:#dc2626;">- R$ 0,00</span></div>
+                    <div class="resumo-linha"><span id="rImpostosLabel">Impostos (0%)</span><span id="rImpostos">R$ 0,00</span></div>
+                    <div class="resumo-linha" style="margin-top:8px;padding-top:12px;border-top:2px solid #e2e8f0;border-bottom:none;">
+                        <span class="resumo-total-label">TOTAL</span>
+                        <span class="resumo-total" id="rTotal">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- MODAL BUSCA PRODUTO -->
+<div class="modal-overlay" id="modalProduto">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Adicionar Produto</h2>
+            <button class="modal-close" onclick="fecharBuscaProduto()">×</button>
+        </div>
+        <div class="search-box">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="buscaProdutoModal" placeholder="Buscar por nome ou código..." oninput="filtrarProdutosModal()">
+        </div>
+        <div class="produto-lista" id="listaProdutosModal"></div>
+    </div>
+</div>
+
+<div id="pdv-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+// ── DADOS GLOBAIS ──────────────────────────────────────────
+let orcId = null;
+let itens = [];
+let todosProdutos = [];
+let todosClientes = [];
+let statusCarregado = "elaboracao"; // status como está salvo no banco (antes da operação atual) — usado para saber se estamos ENTRANDO ou SAINDO de "aprovado"
+const SL={elaboracao:"Em elaboração",enviado:"Enviado",aprovado:"Aprovado",rejeitado:"Rejeitado",cancelado:"Cancelado"};
+const SC={elaboracao:"s-elaboracao",enviado:"s-enviado",aprovado:"s-aprovado",rejeitado:"s-rejeitado",cancelado:"s-cancelado"};
+
+// DADOS GACC-AM PARA O PDF
+const EMPRESA = {
+    nome:    "GACC - Grupo de Apoio à Criança com Câncer do Amazonas",
+    cnpj:    "CNPJ: 04.285.392/0001-33",
+    end:     "Av. Domingos Jorge Velho, 14 - Dom Pedro, Manaus - AM, CEP 69042-470",
+    tel:     "Telefone: (92) 98563-5641",
+    email:   "E-mail: Marketing@gaccamazonas.com.br",
+    site:    "https://doegacc.org.br",
+    logo:    "logo-gacc.png"
+};
+
+// ── INIT ──────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", async () => {
+    const sess = await supabaseClient.auth.getSession();
+    if (!sess.data.session) { window.location.href = "login.html"; return; }
+    document.getElementById("userAvatar").textContent = sess.data.session.user.email.slice(0,2).toUpperCase();
+    document.getElementById("responsavel").value = sess.data.session.user.email.split("@")[0];
+
+    // Data padrão = hoje, validade = hoje + 15 dias
+    const hoje = new Date();
+    const validade = new Date(hoje); validade.setDate(validade.getDate()+15);
+    document.getElementById("dataOrc").value    = hoje.toISOString().split("T")[0];
+    document.getElementById("validadeOrc").value = validade.toISOString().split("T")[0];
+
+    await Promise.all([carregarClientes(), carregarProdutos()]);
+
+    // Verifica se é edição ou novo
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("id")) { orcId = parseInt(params.get("id")); await carregarOrcamento(); }
+    else { document.getElementById("tituloOrc").innerHTML = 'Novo Orçamento <span class="status-badge s-elaboracao">Em elaboração</span>'; }
+});
+
+async function carregarClientes() {
+    const res = await supabaseClient.from("clientes").select("id,nome,empresa,endereco,cidade,estado,cpf_cnpj").eq("ativo",true).order("nome");
+    todosClientes = res.data || [];
+    const sel = document.getElementById("clienteId");
+    sel.innerHTML = '<option value="">Selecionar cliente...</option>';
+    todosClientes.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.nome}${c.empresa?" — "+c.empresa:""}</option>`);
+}
+
+async function carregarProdutos() {
+    const res = await supabaseClient.from("produtos").select("*,categorias(nome)").eq("ativo",true).order("nome");
+    todosProdutos = res.data || [];
+}
+
+async function carregarOrcamento() {
+    const [resOrc, resItens] = await Promise.all([
+        supabaseClient.from("orcamentos").select("*").eq("id",orcId).single(),
+        supabaseClient.from("orcamento_itens").select("*").eq("orcamento_id",orcId)
+    ]);
+    if (resOrc.error) { toast("Erro ao carregar orçamento."); return; }
+    const o = resOrc.data;
+    statusCarregado = o.status || "elaboracao";
+    document.getElementById("tituloOrc").innerHTML = `Orçamento ${o.numero} <span class="status-badge ${SC[o.status]||''}">${SL[o.status]||o.status}</span>`;
+    document.getElementById("clienteId").value    = o.cliente_id || "";
+    document.getElementById("responsavel").value  = o.responsavel || "";
+    document.getElementById("statusOrc").value    = o.status || "elaboracao";
+    document.getElementById("dataOrc").value      = o.data || "";
+    document.getElementById("validadeOrc").value  = o.validade || "";
+    document.getElementById("descontoGeral").value = o.desconto_geral || 0;
+    document.getElementById("impostos").value     = o.impostos || 0;
+    document.getElementById("condicoes").value    = o.condicoes_pagamento || "";
+    document.getElementById("observacoes").value  = o.observacoes || "";
+    itens = (resItens.data||[]).map(i=>({...i}));
+    renderItens();
+    calcular();
+}
+
+// ── ITENS ─────────────────────────────────────────────────
+function adicionarProduto(p) {
+    itens.push({ produto_id:p.id, codigo:p.codigo, descricao:p.nome, quantidade:1, valor_unitario:parseFloat(p.valor_venda||0), desconto:0, total:parseFloat(p.valor_venda||0) });
+    renderItens();
+    calcular();
+    fecharBuscaProduto();
+}
+
+function renderItens() {
+    const tbody = document.getElementById("tbItens");
+    if (!itens.length) { tbody.innerHTML = '<tr id="trVazio"><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;font-size:13px;">Nenhum item adicionado</td></tr>'; return; }
+    tbody.innerHTML = itens.map((it,i) => `
+        <tr>
+            <td><input type="text" value="${it.codigo||''}" onchange="itens[${i}].codigo=this.value" style="width:80px"></td>
+            <td><input type="text" value="${it.descricao||''}" onchange="itens[${i}].descricao=this.value"></td>
+            <td><input type="number" value="${it.quantidade}" min="0.001" step="0.001" onchange="itens[${i}].quantidade=parseFloat(this.value)||1;calcular()" style="width:70px"></td>
+            <td><input type="number" value="${it.valor_unitario}" min="0" step="0.01" onchange="itens[${i}].valor_unitario=parseFloat(this.value)||0;calcular()" style="width:100px"></td>
+            <td><input type="number" value="${it.desconto||0}" min="0" max="100" step="0.01" onchange="itens[${i}].desconto=parseFloat(this.value)||0;calcular()" style="width:70px"></td>
+            <td style="text-align:right;font-weight:600;font-size:13px;">${brl(it.total)}</td>
+            <td><button class="btn-remover-item" onclick="removerItem(${i})"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
+        </tr>`).join("");
+}
+
+function removerItem(i) { itens.splice(i,1); renderItens(); calcular(); }
+
+function calcular() {
+    itens.forEach(it => {
+        const bruto = (it.quantidade||0)*(it.valor_unitario||0);
+        it.total = bruto * (1-(it.desconto||0)/100);
+    });
+    const subtotal = itens.reduce((s,it)=>s+it.total,0);
+    const descPct  = parseFloat(document.getElementById("descontoGeral").value)||0;
+    const impPct   = parseFloat(document.getElementById("impostos").value)||0;
+    const descVal  = subtotal*(descPct/100);
+    const impVal   = (subtotal-descVal)*(impPct/100);
+    const total    = subtotal - descVal + impVal;
+
+    document.getElementById("rSubtotal").textContent     = brl(subtotal);
+    document.getElementById("rDesconto").textContent     = "- "+brl(descVal);
+    document.getElementById("rImpostos").textContent     = brl(impVal);
+    document.getElementById("rTotal").textContent        = brl(total);
+    document.getElementById("rDescontoLabel").textContent = `Desconto (${descPct}%)`;
+    document.getElementById("rImpostosLabel").textContent = `Impostos (${impPct}%)`;
+    renderItens();
+}
+
+// ── BUSCA PRODUTO MODAL ───────────────────────────────────
+function abrirBuscaProduto() {
+    document.getElementById("buscaProdutoModal").value = "";
+    filtrarProdutosModal();
+    document.getElementById("modalProduto").classList.add("open");
+    setTimeout(()=>document.getElementById("buscaProdutoModal").focus(),100);
+}
+function fecharBuscaProduto() { document.getElementById("modalProduto").classList.remove("open"); }
+function filtrarProdutosModal() {
+    const busca = document.getElementById("buscaProdutoModal").value.toLowerCase();
+    const lista = busca ? todosProdutos.filter(p=>(p.nome||"").toLowerCase().includes(busca)||(p.codigo||"").toLowerCase().includes(busca)) : todosProdutos.slice(0,20);
+    const el = document.getElementById("listaProdutosModal");
+    if (!lista.length) { el.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px;font-size:13px;">Nenhum produto encontrado.</p>'; return; }
+    el.innerHTML = lista.map(p=>`
+        <div class="produto-opcao" onclick="adicionarProduto(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+            <div class="produto-opcao-info">
+                <strong>${p.nome}</strong>
+                <span>${p.codigo||''} ${p.categorias?'· '+p.categorias.nome:''}</span>
+            </div>
+            <span class="produto-opcao-preco">${brl(p.valor_venda)}</span>
+        </div>`).join("");
+}
+document.getElementById("modalProduto").addEventListener("click",e=>{if(e.target===document.getElementById("modalProduto"))fecharBuscaProduto();});
+
+// ── ESTOQUE: AJUSTE POR APROVAÇÃO ──────────────────────────
+// direcao = 1  → orçamento está SENDO aprovado agora: desconta a quantidade do estoque
+// direcao = -1 → orçamento estava aprovado e mudou para outro status: devolve a quantidade ao estoque
+async function ajustarEstoquePorAprovacao(itensSnapshot, direcao) {
+    for (const it of itensSnapshot) {
+        if (!it.produto_id) continue;
+        const p = todosProdutos.find(x => x.id === it.produto_id);
+        if (!p) continue;
+        const qtd = parseFloat(it.quantidade || 0) * direcao;
+        const novoEstoque = Math.max(0, parseFloat(p.estoque_atual || 0) - qtd);
+        const { error } = await supabaseClient.from("produtos").update({ estoque_atual: novoEstoque }).eq("id", it.produto_id);
+        if (error) { console.error("Erro ao ajustar estoque do produto", it.produto_id, error); }
+        else { p.estoque_atual = novoEstoque; }
+    }
+}
+
+// ── SALVAR ────────────────────────────────────────────────
+async function salvar() {
+    const responsavel = document.getElementById("responsavel").value.trim();
+    if (!responsavel) { toast("Preencha o responsável."); return false; }
+
+    const statusNovo  = document.getElementById("statusOrc").value;
+    const statusAntes = statusCarregado; // status que estava salvo no banco antes desta ação
+    const itensSnapshot = itens.map(i=>({...i})); // quantidades no momento do salvamento (usadas no ajuste de estoque)
+
+    const subtotal = itens.reduce((s,it)=>s+it.total,0);
+    const descPct  = parseFloat(document.getElementById("descontoGeral").value)||0;
+    const impPct   = parseFloat(document.getElementById("impostos").value)||0;
+    const descVal  = subtotal*(descPct/100);
+    const impVal   = (subtotal-descVal)*(impPct/100);
+    const total    = subtotal - descVal + impVal;
+
+    const dados = {
+        cliente_id:          document.getElementById("clienteId").value || null,
+        responsavel,
+        status:              statusNovo,
+        data:                document.getElementById("dataOrc").value,
+        validade:            document.getElementById("validadeOrc").value,
+        desconto_geral:      descPct,
+        impostos:            impPct,
+        condicoes_pagamento: document.getElementById("condicoes").value.trim(),
+        observacoes:         document.getElementById("observacoes").value.trim(),
+        subtotal,
+        total,
+        updated_at:          new Date().toISOString()
+    };
+
+    let res;
+    if (orcId) {
+        res = await supabaseClient.from("orcamentos").update(dados).eq("id",orcId);
+    } else {
+        // Gera número automático
+        const resUlt = await supabaseClient.from("orcamentos").select("numero").order("created_at",{ascending:false}).limit(1);
+        const ultNum = resUlt.data?.length ? parseInt((resUlt.data[0].numero||"#1000").replace(/\D/g,"")) : 1000;
+        dados.numero = `#${ultNum+1}`;
+        res = await supabaseClient.from("orcamentos").insert([dados]).select().single();
+        if (!res.error) orcId = res.data.id;
+    }
+
+    if (res.error) { console.error(res.error); toast("Erro ao salvar orçamento."); return false; }
+
+    // Salva itens
+    if (orcId) {
+        await supabaseClient.from("orcamento_itens").delete().eq("orcamento_id",orcId);
+        if (itens.length) {
+            const itensSalvar = itens.map(it=>({
+                orcamento_id: orcId,
+                produto_id:   it.produto_id||null,
+                codigo:       it.codigo||"",
+                descricao:    it.descricao||"",
+                quantidade:   it.quantidade||1,
+                valor_unitario: it.valor_unitario||0,
+                desconto:     it.desconto||0,
+                total:        it.total||0
+            }));
+            await supabaseClient.from("orcamento_itens").insert(itensSalvar);
+        }
+    }
+
+    // ── Ajuste de estoque conforme a transição de status ────
+    // Só mexe no estoque quando o status realmente MUDA de/para "aprovado" —
+    // salvar de novo um orçamento que já estava aprovado não desconta de novo.
+    let msgEstoque = "";
+    try {
+        if (statusNovo === "aprovado" && statusAntes !== "aprovado") {
+            await ajustarEstoquePorAprovacao(itensSnapshot, 1);
+            msgEstoque = " Estoque atualizado.";
+        } else if (statusAntes === "aprovado" && statusNovo !== "aprovado") {
+            await ajustarEstoquePorAprovacao(itensSnapshot, -1);
+            msgEstoque = " Estoque devolvido.";
+        }
+    } catch (e) {
+        console.error("Erro ao ajustar estoque:", e);
+        msgEstoque = " (houve um erro ao ajustar o estoque — verifique o console)";
+    }
+
+    toast((statusNovo === "aprovado" && statusAntes !== "aprovado" ? "Orçamento aprovado!" : "Orçamento salvo!") + msgEstoque);
+
+    if (!window.location.search.includes("id=")) {
+        window.history.replaceState({},"",`?id=${orcId}`);
+    }
+    await carregarOrcamento(); // isso também atualiza statusCarregado
+    return true;
+}
+
+async function mudarStatus(novoStatus) {
+    document.getElementById("statusOrc").value = novoStatus;
+    await salvar();
+}
+
+// ── GERAR PDF ─────────────────────────────────────────────
+async function gerarPDF(imprimir=false) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+
+    const PAGE_W = 210;
+    const MARGIN = 16;
+    const CONTENT_W = PAGE_W - MARGIN*2;
+    let y = 0;
+
+    // Cores da marca
+    const AZUL  = [37,99,235];
+    const CINZA = [100,116,139];
+    const PRETO = [15,23,42];
+
+    // ── CABEÇALHO ──────────────────────────────────────────
+    // Fundo azul no topo
+    doc.setFillColor(...AZUL);
+    doc.rect(0, 0, PAGE_W, 42, "F");
+
+    // Marca d'água sutil (diagonal)
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(60);
+    doc.setFont("helvetica","bold");
+    doc.setGState(new doc.GState({opacity:0.04}));
+    doc.text("GACC-AM", PAGE_W/2, 120, {align:"center", angle:45});
+    doc.setGState(new doc.GState({opacity:1}));
+
+    // Tenta carregar logo
+    try {
+        const img = await carregarImagem(EMPRESA.logo);
+        doc.addImage(img, "PNG", MARGIN, 8, 50, 14, undefined, "FAST");
+    } catch(e) {
+        // Sem logo: escreve nome
+        doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255);
+        doc.text("GACC-AM", MARGIN, 18);
+    }
+
+    // Nome da empresa no cabeçalho
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(200,220,255);
+    doc.text(EMPRESA.cnpj, MARGIN, 28);
+    doc.text(EMPRESA.tel + " · " + EMPRESA.email, MARGIN, 33);
+
+    // Título do orçamento (direita)
+    const numOrc = document.getElementById("tituloOrc").textContent.replace(/Em elaboração|Enviado|Aprovado|Rejeitado|Cancelado/g,"").trim();
+    doc.setFontSize(18); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255);
+    doc.text(numOrc, PAGE_W-MARGIN, 18, {align:"right"});
+    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(200,220,255);
+    const statusTxt = SL[document.getElementById("statusOrc").value] || "";
+    doc.text(statusTxt, PAGE_W-MARGIN, 24, {align:"right"});
+
+    y = 50;
+
+    // ── INFO DO ORÇAMENTO ─────────────────────────────────
+    const dataVal  = fdata(document.getElementById("dataOrc").value);
+    const validVal = fdata(document.getElementById("validadeOrc").value);
+    const resp     = document.getElementById("responsavel").value;
+
+    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...CINZA);
+    doc.text(`Data: ${dataVal}   Validade: ${validVal}   Responsável: ${resp}`, MARGIN, y);
+    y += 8;
+
+    // ── CLIENTE ────────────────────────────────────────────
+    const clienteId = document.getElementById("clienteId").value;
+    const clienteDados = todosClientes.find(c=>c.id==clienteId);
+
+    if (clienteDados) {
+        doc.setFillColor(248,250,252);
+        doc.roundedRect(MARGIN, y, CONTENT_W, clienteDados.endereco?22:14, 2, 2, "F");
+        doc.setFontSize(7); doc.setFont("helvetica","bold"); doc.setTextColor(...CINZA);
+        doc.text("CLIENTE", MARGIN+4, y+5);
+        doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.setTextColor(...PRETO);
+        doc.text(clienteDados.nome + (clienteDados.empresa ? " — " + clienteDados.empresa : ""), MARGIN+4, y+11);
+        doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...CINZA);
+        const linhaCliente = [clienteDados.cpf_cnpj, clienteDados.endereco, [clienteDados.cidade,clienteDados.estado].filter(Boolean).join("/")].filter(Boolean).join("  ·  ");
+        if (linhaCliente) doc.text(linhaCliente, MARGIN+4, y+17);
+        y += clienteDados.endereco ? 28 : 20;
+    }
+
+    // ── TABELA DE ITENS ───────────────────────────────────
+    doc.autoTable({
+        startY: y,
+        margin: { left: MARGIN, right: MARGIN },
+        head: [["Código","Descrição","Qtd","Vl. Unit.","Desc. %","Total"]],
+        body: itens.map(it=>[
+            it.codigo||"",
+            it.descricao||"",
+            String(it.quantidade||1),
+            brl(it.valor_unitario),
+            (it.desconto||0)+"%",
+            brl(it.total)
+        ]),
+        headStyles: { fillColor: AZUL, textColor:[255,255,255], fontSize:8, fontStyle:"bold", cellPadding:4 },
+        bodyStyles: { fontSize:9, textColor: PRETO, cellPadding:4 },
+        alternateRowStyles: { fillColor:[248,250,252] },
+        columnStyles: {
+            0:{cellWidth:18},
+            2:{cellWidth:16,halign:"center"},
+            3:{cellWidth:26,halign:"right"},
+            4:{cellWidth:18,halign:"center"},
+            5:{cellWidth:26,halign:"right"}
+        },
+        didDrawPage: (data) => { y = data.cursor.y; }
+    });
+
+    y = doc.lastAutoTable.finalY + 6;
+
+    // ── RESUMO FINANCEIRO ─────────────────────────────────
+    const subtotal = itens.reduce((s,it)=>s+it.total,0);
+    const descPct  = parseFloat(document.getElementById("descontoGeral").value)||0;
+    const impPct   = parseFloat(document.getElementById("impostos").value)||0;
+    const descVal  = subtotal*(descPct/100);
+    const impVal   = (subtotal-descVal)*(impPct/100);
+    const total    = subtotal - descVal + impVal;
+
+    const colD = 120; const colV = CONTENT_W - 60;
+    doc.setFontSize(8.5);
+
+    const linhasResumo = [
+        ["Subtotal", brl(subtotal)],
+        descVal > 0 ? [`Desconto (${descPct}%)`, "- "+brl(descVal)] : null,
+        impVal > 0  ? [`Impostos (${impPct}%)`,  brl(impVal)] : null,
+    ].filter(Boolean);
+
+    linhasResumo.forEach(([label,valor]) => {
+        doc.setFont("helvetica","normal"); doc.setTextColor(...CINZA);
+        doc.text(label, MARGIN+colD, y, {align:"right"});
+        doc.setTextColor(...PRETO);
+        doc.text(valor, MARGIN+CONTENT_W, y, {align:"right"});
+        y += 6;
+    });
+
+    // Linha total
+    doc.setDrawColor(...AZUL); doc.setLineWidth(0.3);
+    doc.line(MARGIN+colD-20, y-1, MARGIN+CONTENT_W, y-1);
+    doc.setFontSize(12); doc.setFont("helvetica","bold"); doc.setTextColor(...AZUL);
+    doc.text("TOTAL", MARGIN+colD, y+5, {align:"right"});
+    doc.text(brl(total), MARGIN+CONTENT_W, y+5, {align:"right"});
+    y += 14;
+
+    // ── CONDIÇÕES / OBSERVAÇÕES ───────────────────────────
+    const condicoes = document.getElementById("condicoes").value.trim();
+    const obs       = document.getElementById("observacoes").value.trim();
+
+    if (condicoes || obs) {
+        doc.setFillColor(248,250,252);
+        doc.roundedRect(MARGIN, y, CONTENT_W, 2, 2, 2, "F");
+        y += 6;
+
+        if (condicoes) {
+            doc.setFontSize(7); doc.setFont("helvetica","bold"); doc.setTextColor(...CINZA);
+            doc.text("CONDIÇÕES DE PAGAMENTO", MARGIN, y);
+            doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(...PRETO);
+            const linhas = doc.splitTextToSize(condicoes, CONTENT_W);
+            doc.text(linhas, MARGIN, y+5);
+            y += 5 + linhas.length*5 + 4;
+        }
+        if (obs) {
+            doc.setFontSize(7); doc.setFont("helvetica","bold"); doc.setTextColor(...CINZA);
+            doc.text("OBSERVAÇÕES", MARGIN, y);
+            doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(...PRETO);
+            const linhas = doc.splitTextToSize(obs, CONTENT_W);
+            doc.text(linhas, MARGIN, y+5);
+            y += 5 + linhas.length*5 + 4;
+        }
+    }
+
+    // ── RODAPÉ ────────────────────────────────────────────
+    const PAGE_H = 297;
+    doc.setFillColor(...AZUL);
+    doc.rect(0, PAGE_H-14, PAGE_W, 14, "F");
+    doc.setFontSize(7.5); doc.setFont("helvetica","normal"); doc.setTextColor(200,220,255);
+    doc.text(`${EMPRESA.nome}  ·  CNPJ ${EMPRESA.cnpj}`, PAGE_W/2, PAGE_H-8, {align:"center"});
+    doc.text(`${EMPRESA.end}  ·  ${EMPRESA.site}`, PAGE_W/2, PAGE_H-4, {align:"center"});
+
+    // ── SAÍDA ─────────────────────────────────────────────
+    const nomeArq = `${numOrc.replace(/\s+/g,"-")}-GACC.pdf`;
+    if (imprimir) {
+        doc.autoPrint();
+        doc.output("dataurlnewwindow");
+    } else {
+        doc.save(nomeArq);
+        toast("PDF gerado: " + nomeArq);
+    }
+}
+
+function imprimir() { gerarPDF(true); }
+
+function carregarImagem(src) {
+    return new Promise((resolve,reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => { const c=document.createElement("canvas"); c.width=img.width; c.height=img.height; c.getContext("2d").drawImage(img,0,0); resolve(c.toDataURL("image/png")); };
+        img.onerror = reject;
+        img.src = src;
+    });
+}
+
+// ── UTILITÁRIOS ───────────────────────────────────────────
+function brl(v){ return parseFloat(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
+function fdata(d){ if(!d)return"—"; const p=d.split("-"); return p.length<3?d:`${p[2]}/${p[1]}/${p[0]}`; }
+function toast(msg){ const t=document.getElementById("pdv-toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),3000); }
+</script>
+</body>
+</html>

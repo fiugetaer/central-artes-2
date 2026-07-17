@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="pagina-protegida" content="true">
+    <title>Saída para Venda | Portal Comercial GACC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pdv-base.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        .venda-header{display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+        .venda-header a.voltar{color:#64748b;text-decoration:none;font-size:22px;}
+        .venda-titulo{flex:1;min-width:200px;}
+        .venda-titulo h1{font-size:24px;font-weight:700;color:#0f172a;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+        .venda-titulo p{font-size:13px;color:#94a3b8;margin-top:2px;}
+        .secao{background:white;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;}
+        .secao-titulo{font-size:15px;font-weight:700;color:#0f172a;margin-bottom:18px;}
+        .itens-table{width:100%;border-collapse:collapse;margin-top:8px;}
+        .itens-table th{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;text-align:left;border-bottom:1px solid #f1f5f9;}
+        .itens-table td{padding:10px;border-bottom:1px solid #f8fafc;vertical-align:middle;}
+        .itens-table tr:last-child td{border-bottom:none;}
+        .itens-table input{border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;font-size:13px;width:100%;outline:none;background:#fafafa;}
+        .itens-table input:focus{border-color:#2563eb;background:white;}
+        .btn-rem{background:none;border:none;color:#ef4444;cursor:pointer;padding:4px;border-radius:4px;}
+        .btn-rem:hover{background:#fef2f2;}
+        .btn-rem svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;}
+        .status-badge{font-size:13px;font-weight:600;padding:5px 12px;border-radius:999px;}
+        .s-aberta{background:#eff6ff;color:#2563eb;}
+        .s-encerrada{background:#f0fdf4;color:#16a34a;}
+        .s-cancelada{background:#f8fafc;color:#94a3b8;}
+        .btn-pdf-link{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;border:1px solid #e2e8f0;color:#334155;background:white;}
+        .btn-pdf-link:hover{background:#f8fafc;}
+        .produto-lista{max-height:300px;overflow-y:auto;margin-top:12px;}
+        .produto-opcao{padding:12px;border-radius:8px;cursor:pointer;transition:background .1s;display:flex;justify-content:space-between;align-items:center;}
+        .produto-opcao:hover{background:#f1f5f9;}
+        .produto-opcao-info strong{display:block;font-size:14px;color:#0f172a;}
+        .produto-opcao-info span{font-size:12px;color:#94a3b8;}
+        .produto-opcao-estoque{font-size:13px;font-weight:700;color:#0f172a;}
+        .estoque-baixo{color:#ef4444;}
+        .resumo-retorno{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;}
+        .res-card{background:#f8fafc;border-radius:10px;padding:16px;text-align:center;}
+        .res-card small{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;}
+        .res-card strong{font-size:22px;font-weight:700;color:#0f172a;}
+        .res-card.verde strong{color:#16a34a;}
+        .res-card.azul strong{color:#2563eb;}
+        .res-card.laranja strong{color:#d97706;}
+        .alerta-validacao{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;margin-top:8px;display:none;}
+        .alerta-validacao.visivel{display:block;}
+        @media(max-width:900px){.resumo-retorno{grid-template-columns:1fr 1fr;}}
+    </style>
+</head>
+<body>
+<aside class="pdv-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon"><svg viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <div class="brand-text"><h3>Portal Comercial</h3><span>GACC-AM</span></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="pdv-dashboard.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
+        <a href="pdv-orcamentos.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Orçamentos</span></a>
+        <a href="pdv-clientes.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Clientes</span></a>
+        <a href="pdv-produtos.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>Produtos</span></a>
+        <a href="pdv-vendas.html" class="nav-item active"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Vendas Externas</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M15 3H19a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H15"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span>Central de Artes</span></a>
+    </div>
+</aside>
+
+<main class="pdv-main">
+    <div class="pdv-topbar">
+        <span class="topbar-label">Portal</span>
+        <div class="topbar-actions"><div class="avatar" id="userAvatar">AD</div></div>
+    </div>
+    <div class="pdv-content">
+        <div class="venda-header">
+            <a href="pdv-vendas.html" title="Voltar" class="voltar">←</a>
+            <div class="venda-titulo">
+                <h1 id="tituloVenda">Nova Saída <span class="status-badge s-aberta" id="badgeStatus">Em aberto</span></h1>
+                <p>Relatório de Saída para Venda Externa</p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <a id="linkPdfSaida" class="btn-pdf-link" style="display:none;" target="_blank" rel="noopener">PDF de Saída</a>
+                <a id="linkPdfDevolucao" class="btn-pdf-link" style="display:none;" target="_blank" rel="noopener">PDF de Devolução</a>
+                <button class="btn-primary" id="btnExecutar" onclick="executarSaida()">Executar Saída</button>
+            </div>
+        </div>
+
+        <div class="secao">
+            <div class="secao-titulo">Informações da Saída</div>
+            <div class="form-grid">
+                <div class="campo"><label>Responsável *</label><input type="text" id="responsavel" placeholder="Nome do vendedor"></div>
+                <div class="campo"><label>Veículo (opcional)</label><input type="text" id="veiculo" placeholder="Ex.: Gol Branco — ABC-1234"></div>
+                <div class="campo"><label>Data</label><input type="date" id="dataVenda"></div>
+                <div class="campo"><label>Destino</label><input type="text" id="destino" placeholder="Ex.: Feira do Produtor, Centro"></div>
+                <div class="campo full"><label>Observações</label><textarea id="observacoes" rows="2" placeholder="Informações adicionais..."></textarea></div>
+            </div>
+        </div>
+
+        <div class="secao" id="secaoItens">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <div class="secao-titulo" style="margin:0">Produtos Retirados</div>
+                <button class="btn-primary" id="btnAddProduto" onclick="abrirBuscaProduto()">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Adicionar produto
+                </button>
+            </div>
+            <table class="itens-table">
+                <thead><tr><th>Código</th><th>Produto</th><th style="width:100px">Qtd Retirada</th><th style="width:110px">Vl. Unit.</th><th style="width:110px;text-align:right">Total</th><th style="width:36px"></th></tr></thead>
+                <tbody id="tbItens"><tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px;font-size:13px;">Nenhum produto adicionado</td></tr></tbody>
+            </table>
+        </div>
+
+        <div class="secao" id="secaoRetorno" style="display:none;">
+            <div class="secao-titulo">Retorno da Venda</div>
+            <p style="font-size:13px;color:#64748b;margin-bottom:16px;">
+                Informe as quantidades vendidas e devolvidas. A soma deve ser igual à quantidade retirada.
+            </p>
+            <table class="itens-table">
+                <thead><tr><th>Produto</th><th style="width:110px;text-align:center">Retirado</th><th style="width:110px;text-align:center">Vendido</th><th style="width:110px;text-align:center">Devolvido</th><th style="width:110px;text-align:right">Vl. Vendido</th></tr></thead>
+                <tbody id="tbRetorno"></tbody>
+            </table>
+            <div id="alertaValidacao" class="alerta-validacao"></div>
+            <div class="resumo-retorno">
+                <div class="res-card azul"><small>Total Retirado</small><strong id="rTotalRetirado">0 itens</strong></div>
+                <div class="res-card verde"><small>Total Vendido</small><strong id="rTotalVendido">R$ 0,00</strong></div>
+                <div class="res-card laranja"><small>Total Devolvido</small><strong id="rTotalDevolvido">0 itens</strong></div>
+            </div>
+        </div>
+
+        <!-- "Cancelar saída" só aparece ANTES de executar (saidaId ainda não existe).
+             Depois de executada, a única forma de fechar é encerrar e devolver ao estoque. -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;">
+            <button class="btn-primary" style="background:#16a34a;" id="btnEncerrar" onclick="encerrarVenda()">✅ Encerrar venda e devolver estoque</button>
+            <button class="btn-secondary" style="color:#dc2626;border-color:#fecaca;" id="btnCancelar" onclick="cancelarNovaSaida()">Cancelar saída</button>
+        </div>
+    </div>
+</main>
+
+<div class="modal-overlay" id="modalProduto">
+    <div class="modal">
+        <div class="modal-header"><h2>Selecionar Produto</h2><button class="modal-close" onclick="fecharBusca()">×</button></div>
+        <div class="search-box">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="buscaProdutoModal" placeholder="Buscar por nome ou código..." oninput="filtrarModal()">
+        </div>
+        <div class="produto-lista" id="listaProdutosModal"></div>
+    </div>
+</div>
+
+<div id="pdv-toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+// ── DADOS GLOBAIS ──────────────────────────────────────────
+let saidaId = null;
+let itens = [];
+let itensOriginais = [];
+let todosProdutos = [];
+let statusAtual = "aberta";
+let numeroSaida = null;
+let pdfSaidaUrl = null;
+let pdfDevolucaoUrl = null;
+
+const BUCKET_PDFS = "relatorios-vendas";
+const EMPRESA = {
+    nome:  "GACC - Grupo de Apoio à Criança com Câncer do Amazonas",
+    cnpj:  "CNPJ: 04.285.392/0001-33",
+    end:   "Endereço:Av. Domingos Jorge Velho, 14 - Dom Pedro, Manaus - AM, CEP 69042-470",
+    tel:   "Telefone: (92) 98563-5641",
+    email: "E-mail: marketing@gaccamazonas.com.br",
+    site:  "Site: https://doegacc.org.br",
+    logo:  "logo-gacc.png"
+};
+
+// ── INIT ──────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", async () => {
+    const sess = await supabaseClient.auth.getSession();
+    if (!sess.data.session) { window.location.href = "login.html"; return; }
+    document.getElementById("userAvatar").textContent = sess.data.session.user.email.slice(0,2).toUpperCase();
+    document.getElementById("responsavel").value = sess.data.session.user.email.split("@")[0];
+    document.getElementById("dataVenda").value = new Date().toISOString().split("T")[0];
+    await carregarProdutos();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("id")) {
+        saidaId = parseInt(params.get("id"));
+        await carregarSaida();
+    } else {
+        atualizarUI(); // aplica a visibilidade correta dos botões numa saída nova (ainda não executada)
+    }
+});
+
+async function carregarProdutos() {
+    const res = await supabaseClient.from("produtos").select("*,categorias(nome)").eq("ativo",true).order("nome");
+    todosProdutos = res.data || [];
+}
+
+async function carregarSaida() {
+    const [resSaida, resItens] = await Promise.all([
+        supabaseClient.from("saidas").select("*").eq("id",saidaId).single(),
+        supabaseClient.from("saida_itens").select("*").eq("saida_id",saidaId)
+    ]);
+    if (resSaida.error) { toast("Erro ao carregar saída."); return; }
+    const s = resSaida.data;
+    statusAtual     = s.status;
+    numeroSaida     = s.numero || null;
+    pdfSaidaUrl     = s.pdf_saida_url || null;
+    pdfDevolucaoUrl = s.pdf_devolucao_url || null;
+
+    document.getElementById("tituloVenda").innerHTML =
+        `Saída ${s.numero} <span class="status-badge s-${s.status}">${SL(s.status)}</span>`;
+    document.getElementById("responsavel").value  = s.responsavel || "";
+    document.getElementById("veiculo").value      = s.veiculo || "";
+    document.getElementById("dataVenda").value    = s.data || "";
+    document.getElementById("destino").value      = s.destino || "";
+    document.getElementById("observacoes").value  = s.observacoes || "";
+
+    itens = (resItens.data || []).map(i=>({...i}));
+    // itensOriginais = snapshot do banco — usado para calcular deltas de estoque
+    itensOriginais = itens.map(i=>({...i}));
+    atualizarUI();
+}
+
+function SL(s){ return {aberta:"Em aberto",encerrada:"Encerrada",cancelada:"Cancelada"}[s]||s; }
+
+function atualizarUI() {
+    renderItensRetirada();
+    const isAberta    = statusAtual === "aberta";
+    const isEncerrada = statusAtual === "encerrada";
+
+    document.getElementById("secaoRetorno").style.display = (isEncerrada || (isAberta && itens.length > 0 && saidaId)) ? "block" : "none";
+    document.getElementById("btnEncerrar").style.display  = isAberta && saidaId ? "inline-flex" : "none";
+    document.getElementById("btnCancelar").style.display  = isAberta && !saidaId ? "inline-flex" : "none";
+    document.getElementById("btnAddProduto").style.display = isAberta ? "inline-flex" : "none";
+    document.getElementById("btnExecutar").style.display  = isAberta ? "inline-flex" : "none";
+
+    const linkS = document.getElementById("linkPdfSaida");
+    const linkD = document.getElementById("linkPdfDevolucao");
+    if (pdfSaidaUrl)    { linkS.href = pdfSaidaUrl;    linkS.style.display = "inline-flex"; } else { linkS.style.display = "none"; }
+    if (pdfDevolucaoUrl){ linkD.href = pdfDevolucaoUrl; linkD.style.display = "inline-flex"; } else { linkD.style.display = "none"; }
+
+    if (isEncerrada || (isAberta && saidaId)) renderRetorno();
+    if (isEncerrada) calcularResumo();
+
+    document.querySelectorAll("#secaoItens input, .form-grid input, .form-grid textarea").forEach(el => {
+        el.disabled = !isAberta;
+    });
+}
+
+function renderItensRetirada() {
+    const tbody = document.getElementById("tbItens");
+    const isAberta = statusAtual === "aberta";
+    if (!itens.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px;font-size:13px;">Nenhum produto adicionado</td></tr>';
+        return;
+    }
+    tbody.innerHTML = itens.map((it,i) => `<tr>
+        <td style="font-size:12px;color:#94a3b8;font-family:monospace;">${it.codigo||"—"}</td>
+        <td style="font-weight:600;color:#0f172a;">${it.descricao}</td>
+        <td>${isAberta
+            ? `<input type="number" value="${it.quantidade_retirada||1}" min="0.001" step="0.001" onchange="itens[${i}].quantidade_retirada=parseFloat(this.value)||1;renderItensRetirada()" style="width:90px">`
+            : `<span>${it.quantidade_retirada}</span>`}</td>
+        <td>${isAberta
+            ? `<input type="number" value="${it.valor_unitario||0}" min="0" step="0.01" onchange="itens[${i}].valor_unitario=parseFloat(this.value)||0;renderItensRetirada()" style="width:100px">`
+            : `<span>${brl(it.valor_unitario)}</span>`}</td>
+        <td style="text-align:right;font-weight:600;">${brl((it.quantidade_retirada||1)*(it.valor_unitario||0))}</td>
+        <td>${isAberta ? `<button class="btn-rem" onclick="removerItem(${i})"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ""}</td>
+    </tr>`).join("");
+}
+
+function removerItem(i) { itens.splice(i,1); atualizarUI(); }
+
+function renderRetorno() {
+    const tbody = document.getElementById("tbRetorno");
+    const isAberta = statusAtual === "aberta";
+    tbody.innerHTML = itens.map((it,i) => {
+        const retirado = parseFloat(it.quantidade_retirada||0);
+        const vendido  = parseFloat(it.quantidade_vendida||0);
+        const devol    = parseFloat(it.quantidade_devolvida||0);
+        const erro     = (vendido + devol) !== retirado && (vendido > 0 || devol > 0);
+        return `<tr>
+            <td style="font-weight:600;">${it.descricao}</td>
+            <td style="text-align:center;color:#64748b;">${retirado}</td>
+            <td style="text-align:center;">${isAberta
+                ? `<input type="number" value="${vendido}" min="0" step="0.001" style="width:90px;text-align:center${erro?';border-color:#ef4444;background:#fef2f2':''}" onchange="itens[${i}].quantidade_vendida=parseFloat(this.value)||0;renderRetorno();calcularResumo()">`
+                : `<span>${vendido}</span>`}</td>
+            <td style="text-align:center;">${isAberta
+                ? `<input type="number" value="${devol}" min="0" step="0.001" style="width:90px;text-align:center${erro?';border-color:#ef4444;background:#fef2f2':''}" onchange="itens[${i}].quantidade_devolvida=parseFloat(this.value)||0;renderRetorno();calcularResumo()">`
+                : `<span>${devol}</span>`}</td>
+            <td style="text-align:right;font-weight:600;color:#16a34a;">${brl(vendido*(it.valor_unitario||0))}</td>
+        </tr>`;
+    }).join("");
+    calcularResumo();
+}
+
+function calcularResumo() {
+    const totalQtdR = itens.reduce((s,it)=>s+parseFloat(it.quantidade_retirada||0),0);
+    const totalV    = itens.reduce((s,it)=>s+(parseFloat(it.quantidade_vendida||0)*(it.valor_unitario||0)),0);
+    const totalQtdD = itens.reduce((s,it)=>s+parseFloat(it.quantidade_devolvida||0),0);
+    document.getElementById("rTotalRetirado").textContent  = totalQtdR + " itens";
+    document.getElementById("rTotalVendido").textContent   = brl(totalV);
+    document.getElementById("rTotalDevolvido").textContent = totalQtdD + " itens";
+}
+
+function validarRetorno() {
+    const erros = itens.filter(it => {
+        const v = parseFloat(it.quantidade_vendida||0);
+        const d = parseFloat(it.quantidade_devolvida||0);
+        const r = parseFloat(it.quantidade_retirada||0);
+        return Math.abs((v+d) - r) > 0.001;
+    });
+    const alerta = document.getElementById("alertaValidacao");
+    if (erros.length) {
+        alerta.textContent = `⚠ ${erros.length} produto(s) com quantidade incorreta: vendido + devolvido deve ser igual ao retirado.`;
+        alerta.classList.add("visivel");
+        return false;
+    }
+    alerta.classList.remove("visivel");
+    return true;
+}
+
+// ── BUSCA PRODUTO ─────────────────────────────────────────
+function abrirBuscaProduto() {
+    document.getElementById("buscaProdutoModal").value = "";
+    filtrarModal();
+    document.getElementById("modalProduto").classList.add("open");
+    setTimeout(()=>document.getElementById("buscaProdutoModal").focus(),100);
+}
+function fecharBusca() { document.getElementById("modalProduto").classList.remove("open"); }
+function filtrarModal() {
+    const busca = document.getElementById("buscaProdutoModal").value.toLowerCase();
+    const lista = busca ? todosProdutos.filter(p=>(p.nome||"").toLowerCase().includes(busca)||(p.codigo||"").toLowerCase().includes(busca)) : todosProdutos.slice(0,20);
+    const el = document.getElementById("listaProdutosModal");
+    if (!lista.length) { el.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px;font-size:13px;">Nenhum produto encontrado.</p>'; return; }
+    el.innerHTML = lista.map(p=>`
+        <div class="produto-opcao" onclick="adicionarProduto(${p.id})">
+            <div class="produto-opcao-info"><strong>${p.nome}</strong><span>${p.codigo||''} ${p.categorias?'· '+p.categorias.nome:''}</span></div>
+            <span class="produto-opcao-estoque${p.estoque_atual<=0?' estoque-baixo':''}">${p.estoque_atual<=0?'⚠ Sem estoque':'Estoque: '+p.estoque_atual}</span>
+        </div>`).join("");
+}
+function adicionarProduto(id) {
+    const p = todosProdutos.find(x=>x.id===id);
+    if (!p) return;
+    if (itens.find(it=>it.produto_id===id)) { toast("Produto já adicionado."); return; }
+    itens.push({ produto_id:p.id, codigo:p.codigo, descricao:p.nome, quantidade_retirada:1, quantidade_vendida:0, quantidade_devolvida:0, valor_unitario:parseFloat(p.valor_venda||0), total_vendido:0, total_devolvido:0 });
+    fecharBusca();
+    atualizarUI();
+}
+document.getElementById("modalProduto").addEventListener("click",e=>{ if(e.target===document.getElementById("modalProduto")) fecharBusca(); });
+
+// ── CANCELAR SAÍDA (só disponível antes de "Executar Saída") ──
+// Nada foi gravado no banco ainda nesse ponto, então basta
+// descartar o formulário e voltar para a lista.
+function cancelarNovaSaida() {
+    if (!confirm("Cancelar esta saída? Nada foi salvo ainda, os dados preenchidos serão perdidos.")) return;
+    window.location.href = "pdv-vendas.html";
+}
+
+// ── EXECUTAR SAÍDA ────────────────────────────────────────
+async function executarSaida() {
+    const ok = await salvarDados();
+    if (!ok) return;
+    const doc = await construirPDFSaida();
+    doc.save(`${(numeroSaida||"saida").replace(/\s+/g,"-")}-Saida-GACC.pdf`);
+    await salvarPDFNoStorage(doc, "saida");
+    toast("Saída executada! PDF gerado e estoque atualizado.");
+    await carregarSaida();
+}
+
+// ── SALVAR DADOS ──────────────────────────────────────────
+async function salvarDados() {
+    const responsavel = document.getElementById("responsavel").value.trim();
+    if (!responsavel) { toast("Informe o responsável."); return false; }
+    if (!itens.length) { toast("Adicione pelo menos um produto."); return false; }
+
+    const dados = {
+        responsavel,
+        veiculo:     document.getElementById("veiculo").value.trim(),
+        data:        document.getElementById("dataVenda").value,
+        destino:     document.getElementById("destino").value.trim(),
+        observacoes: document.getElementById("observacoes").value.trim(),
+        status:      "aberta",
+        updated_at:  new Date().toISOString()
+    };
+
+    let res;
+    if (saidaId) {
+        res = await supabaseClient.from("saidas").update(dados).eq("id",saidaId);
+    } else {
+        const resUlt = await supabaseClient.from("saidas").select("numero").order("created_at",{ascending:false}).limit(1);
+        const ult = resUlt.data?.length ? parseInt((resUlt.data[0].numero||"VS0000").replace(/\D/g,"")) : 0;
+        dados.numero = `VS${String(ult+1).padStart(4,"0")}`;
+        res = await supabaseClient.from("saidas").insert([dados]).select().single();
+        if (!res.error) saidaId = res.data.id;
+    }
+    if (res.error) { console.error(res.error); toast("Erro ao salvar."); return false; }
+
+    await supabaseClient.from("saida_itens").delete().eq("saida_id",saidaId);
+    if (itens.length) {
+        await supabaseClient.from("saida_itens").insert(itens.map(it=>({
+            saida_id: saidaId, produto_id:it.produto_id||null, codigo:it.codigo||"",
+            descricao:it.descricao||"", quantidade_retirada:it.quantidade_retirada||0,
+            quantidade_vendida:it.quantidade_vendida||0, quantidade_devolvida:it.quantidade_devolvida||0,
+            valor_unitario:it.valor_unitario||0,
+            total_vendido:(it.quantidade_vendida||0)*(it.valor_unitario||0),
+            total_devolvido:(it.quantidade_devolvida||0)*(it.valor_unitario||0)
+        })));
+    }
+
+    // Ajuste de estoque por delta (só a diferença entre o novo e o original)
+    const mapaOriginal = new Map(itensOriginais.filter(i=>i.produto_id).map(i=>[i.produto_id, parseFloat(i.quantidade_retirada||0)]));
+    const idsAtuais = new Set(itens.filter(i=>i.produto_id).map(i=>i.produto_id));
+
+    for (const it of itens) {
+        if (!it.produto_id) continue;
+        const p = todosProdutos.find(x=>x.id===it.produto_id);
+        if (!p) continue;
+        const antiga = mapaOriginal.get(it.produto_id) || 0;
+        const atual  = parseFloat(it.quantidade_retirada||0);
+        const delta  = atual - antiga;
+        if (delta !== 0) {
+            const novoEstoque = Math.max(0, parseFloat(p.estoque_atual||0) - delta);
+            await supabaseClient.from("produtos").update({ estoque_atual: novoEstoque }).eq("id",it.produto_id);
+            p.estoque_atual = novoEstoque;
+        }
+    }
+
+    // Produtos removidos da lista: devolve ao estoque
+    for (const orig of itensOriginais) {
+        if (!orig.produto_id || idsAtuais.has(orig.produto_id)) continue;
+        const p = todosProdutos.find(x=>x.id===orig.produto_id);
+        if (p) {
+            const novoEstoque = parseFloat(p.estoque_atual||0) + parseFloat(orig.quantidade_retirada||0);
+            await supabaseClient.from("produtos").update({ estoque_atual: novoEstoque }).eq("id",orig.produto_id);
+            p.estoque_atual = novoEstoque;
+        }
+    }
+
+    itensOriginais = itens.map(i=>({...i}));
+    if (!window.location.search.includes("id=")) window.history.replaceState({},"",`?id=${saidaId}`);
+    const { data: sRow } = await supabaseClient.from("saidas").select("numero").eq("id",saidaId).single();
+    numeroSaida = sRow?.numero || numeroSaida;
+    return true;
+}
+
+// ── ENCERRAR VENDA (única ação para fechar a saída) ────────
+// Sempre define status = "encerrada" e devolve ao estoque
+// apenas a quantidade_devolvida informada.
+async function encerrarVenda() {
+    if (!validarRetorno()) return;
+
+    try {
+        const { error: errUpd } = await supabaseClient.from("saidas").update({
+            status: "encerrada", updated_at: new Date().toISOString()
+        }).eq("id",saidaId);
+
+        if (errUpd) {
+            console.error("Erro ao atualizar status da saída:", errUpd);
+            toast("Erro ao encerrar: " + (errUpd.message || "verifique o console (F12)"));
+            return;
+        }
+
+        for (const it of itens) {
+            // Usa o id da própria linha (mais confiável que produto_id, que pode ser nulo
+            // em itens avulsos e faz o filtro .eq("produto_id", null) falhar)
+            let query = supabaseClient.from("saida_itens").update({
+                quantidade_vendida:   parseFloat(it.quantidade_vendida||0),
+                quantidade_devolvida: parseFloat(it.quantidade_devolvida||0),
+                total_vendido:   (it.quantidade_vendida||0)*(it.valor_unitario||0),
+                total_devolvido: (it.quantidade_devolvida||0)*(it.valor_unitario||0)
+            });
+            query = it.id ? query.eq("id", it.id) : query.eq("saida_id",saidaId).eq("produto_id",it.produto_id);
+            const { error: errItem } = await query;
+            if (errItem) console.error("Erro ao atualizar item da saída:", it, errItem);
+
+            // Devolve ao estoque APENAS a quantidade devolvida (não a retirada inteira)
+            if (it.produto_id) {
+                const p = todosProdutos.find(x=>x.id===it.produto_id);
+                if (p) {
+                    const novoEstoque = parseFloat(p.estoque_atual||0) + parseFloat(it.quantidade_devolvida||0);
+                    const { error: errEstoque } = await supabaseClient.from("produtos").update({ estoque_atual: novoEstoque }).eq("id",it.produto_id);
+                    if (errEstoque) console.error("Erro ao devolver estoque:", it.produto_id, errEstoque);
+                    else p.estoque_atual = novoEstoque;
+                }
+            }
+        }
+
+        itensOriginais = itens.map(i=>({...i}));
+        statusAtual = "encerrada";
+
+        const doc = await construirPDFDevolucao();
+        doc.save(`${(numeroSaida||"saida").replace(/\s+/g,"-")}-Devolucao-GACC.pdf`);
+        await salvarPDFNoStorage(doc, "devolucao");
+
+        toast("Venda encerrada! PDF de devolução gerado.");
+        await carregarSaida();
+    } catch (e) {
+        console.error("Erro inesperado ao encerrar venda:", e);
+        toast("Erro ao encerrar: " + (e.message || "veja o console (F12) para detalhes"));
+    }
+}
+
+// ── PDF STORAGE ───────────────────────────────────────────
+async function salvarPDFNoStorage(doc, tipo) {
+    try {
+        const blob = doc.output("blob");
+        const path = `saida-${saidaId}/${tipo}.pdf`;
+        const { error: upErr } = await supabaseClient.storage.from(BUCKET_PDFS).upload(path, blob, { upsert:true, contentType:"application/pdf" });
+        if (upErr) { console.error(upErr); return; }
+        const { data } = supabaseClient.storage.from(BUCKET_PDFS).getPublicUrl(path);
+        const campo = tipo === "saida" ? "pdf_saida_url" : "pdf_devolucao_url";
+        await supabaseClient.from("saidas").update({ [campo]: data.publicUrl }).eq("id", saidaId);
+        if (tipo === "saida") pdfSaidaUrl = data.publicUrl; else pdfDevolucaoUrl = data.publicUrl;
+    } catch(e) { console.error(e); }
+}
+
+// ── PDFs ────────────────────────────────────────────────────
+async function construirPDFSaida() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+    const PAGE_W=210, MARGIN=16, CONTENT_W=PAGE_W-MARGIN*2;
+    const AZUL=[37,99,235], CINZA=[100,116,139], PRETO=[15,23,42];
+    let y=0;
+    doc.setFillColor(...AZUL); doc.rect(0,0,PAGE_W,42,"F");
+    doc.setTextColor(255,255,255); doc.setFontSize(60); doc.setFont("helvetica","bold");
+    doc.setGState(new doc.GState({opacity:0.04}));
+    doc.text("GACC-AM",PAGE_W/2,120,{align:"center",angle:45});
+    doc.setGState(new doc.GState({opacity:1}));
+    try { const img=await carregarImagem(EMPRESA.logo); doc.addImage(img,"PNG",MARGIN,8,50,14,undefined,"FAST"); }
+    catch(e) { doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255); doc.text("GACC-AM",MARGIN,18); }
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(200,220,255);
+    doc.text(EMPRESA.cnpj,MARGIN,28); doc.text(EMPRESA.tel+" · "+EMPRESA.email,MARGIN,33);
+    doc.setFontSize(16); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255);
+    doc.text("PDF de Saída",PAGE_W-MARGIN,14,{align:"right"});
+    doc.setFontSize(11); doc.setTextColor(200,220,255);
+    doc.text(numeroSaida||"—",PAGE_W-MARGIN,22,{align:"right"});
+    doc.setFontSize(8); doc.text("Produtos retirados para venda externa",PAGE_W-MARGIN,28,{align:"right"});
+    y=50;
+    const resp=document.getElementById("responsavel").value;
+    const dest=document.getElementById("destino").value||"—";
+    const veic=document.getElementById("veiculo").value||"—";
+    const data=fdata(document.getElementById("dataVenda").value);
+    const obs=document.getElementById("observacoes").value;
+    doc.setFillColor(248,250,252); doc.roundedRect(MARGIN,y,CONTENT_W,30,2,2,"F");
+    doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(...CINZA);
+    doc.text("RESPONSÁVEL",MARGIN+4,y+6); doc.text("DESTINO",MARGIN+80,y+6); doc.text("VEÍCULO",MARGIN+130,y+6); doc.text("DATA",MARGIN+170,y+6);
+    doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.setTextColor(...PRETO); doc.text(resp,MARGIN+4,y+14);
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.text(dest,MARGIN+80,y+14); doc.text(veic,MARGIN+130,y+14); doc.text(data,MARGIN+170,y+14);
+    if (obs) { doc.setFontSize(8); doc.setTextColor(...CINZA); doc.text("Obs.: "+obs,MARGIN+4,y+24); }
+    y+=38;
+    doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.setTextColor(...PRETO); doc.text("Produtos Retirados",MARGIN,y); y+=4;
+    doc.autoTable({
+        startY:y, margin:{left:MARGIN,right:MARGIN},
+        head:[["Código","Produto","Qtd Retirada","Vl. Unit.","Total"]],
+        body:itens.map(it=>[it.codigo||"—",it.descricao,String(it.quantidade_retirada||0),brl(it.valor_unitario),brl((it.quantidade_retirada||0)*(it.valor_unitario||0))]),
+        headStyles:{fillColor:AZUL,textColor:[255,255,255],fontSize:8,fontStyle:"bold",cellPadding:4},
+        bodyStyles:{fontSize:9,textColor:PRETO,cellPadding:4},
+        alternateRowStyles:{fillColor:[248,250,252]},
+        columnStyles:{0:{cellWidth:20},2:{cellWidth:28,halign:"center"},3:{cellWidth:28,halign:"right"},4:{cellWidth:28,halign:"right"}}
+    });
+    y=doc.lastAutoTable.finalY+8;
+    const totalQtd=itens.reduce((s,it)=>s+parseFloat(it.quantidade_retirada||0),0);
+    const totalValor=itens.reduce((s,it)=>s+(parseFloat(it.quantidade_retirada||0)*(it.valor_unitario||0)),0);
+    doc.setFillColor(239,246,255); doc.roundedRect(MARGIN,y,CONTENT_W,24,2,2,"F");
+    doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(...CINZA);
+    doc.text("TOTAL DE ITENS RETIRADOS",MARGIN+6,y+8); doc.text("VALOR TOTAL RETIRADO",MARGIN+CONTENT_W-70,y+8);
+    doc.setFontSize(15); doc.setTextColor(...AZUL);
+    doc.text(String(totalQtd),MARGIN+6,y+19); doc.text(brl(totalValor),MARGIN+CONTENT_W-70,y+19);
+    y+=34;
+    if (y<220) y=220;
+    doc.setDrawColor(...CINZA); doc.setLineWidth(0.3); doc.line(MARGIN,y,MARGIN+80,y);
+    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...CINZA);
+    doc.text("Assinatura do Responsável",MARGIN,y+5); doc.text(resp,MARGIN,y+10);
+    const PAGE_H=297;
+    doc.setFillColor(...AZUL); doc.rect(0,PAGE_H-14,PAGE_W,14,"F");
+    doc.setFontSize(7.5); doc.setFont("helvetica","normal"); doc.setTextColor(200,220,255);
+    doc.text(`${EMPRESA.nome}  ·  CNPJ ${EMPRESA.cnpj}`,PAGE_W/2,PAGE_H-8,{align:"center"});
+    doc.text(`${EMPRESA.end}  ·  ${EMPRESA.site}`,PAGE_W/2,PAGE_H-4,{align:"center"});
+    return doc;
+}
+
+async function construirPDFDevolucao() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4" });
+    const PAGE_W=210, MARGIN=16, CONTENT_W=PAGE_W-MARGIN*2;
+    const VERDE=[22,163,74], AZUL=[37,99,235], LARANJA=[217,119,6], CINZA=[100,116,139], PRETO=[15,23,42];
+    let y=0;
+    doc.setFillColor(...VERDE); doc.rect(0,0,PAGE_W,42,"F");
+    doc.setTextColor(255,255,255); doc.setFontSize(60); doc.setFont("helvetica","bold");
+    doc.setGState(new doc.GState({opacity:0.04})); doc.text("GACC-AM",PAGE_W/2,120,{align:"center",angle:45}); doc.setGState(new doc.GState({opacity:1}));
+    try { const img=await carregarImagem(EMPRESA.logo); doc.addImage(img,"PNG",MARGIN,8,50,14,undefined,"FAST"); }
+    catch(e) { doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255); doc.text("GACC-AM",MARGIN,18); }
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(220,255,230);
+    doc.text(EMPRESA.cnpj,MARGIN,28); doc.text(EMPRESA.tel+" · "+EMPRESA.email,MARGIN,33);
+    doc.setFontSize(16); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255);
+    doc.text("PDF de Devolução",PAGE_W-MARGIN,14,{align:"right"});
+    doc.setFontSize(11); doc.setTextColor(220,255,230); doc.text(numeroSaida||"—",PAGE_W-MARGIN,22,{align:"right"});
+    doc.setFontSize(8); doc.text("Comparativo: retirado x vendido x devolvido",PAGE_W-MARGIN,28,{align:"right"});
+    y=50;
+    const resp=document.getElementById("responsavel").value;
+    const dest=document.getElementById("destino").value||"—";
+    const veic=document.getElementById("veiculo").value||"—";
+    const data=fdata(document.getElementById("dataVenda").value);
+    doc.setFillColor(240,253,244); doc.roundedRect(MARGIN,y,CONTENT_W,22,2,2,"F");
+    doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(...CINZA);
+    doc.text("RESPONSÁVEL",MARGIN+4,y+6); doc.text("DESTINO",MARGIN+80,y+6); doc.text("VEÍCULO",MARGIN+130,y+6); doc.text("DATA",MARGIN+170,y+6);
+    doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.setTextColor(...PRETO); doc.text(resp,MARGIN+4,y+14);
+    doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.text(dest,MARGIN+80,y+14); doc.text(veic,MARGIN+130,y+14); doc.text(data,MARGIN+170,y+14);
+    y+=30;
+    doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.setTextColor(...PRETO); doc.text("Comparativo de Retorno",MARGIN,y); y+=4;
+    doc.autoTable({
+        startY:y, margin:{left:MARGIN,right:MARGIN},
+        head:[["Produto","Retirado","Vendido","Devolvido","Vl. Vendido"]],
+        body:itens.map(it=>[it.descricao,String(it.quantidade_retirada||0),String(it.quantidade_vendida||0),String(it.quantidade_devolvida||0),brl((it.quantidade_vendida||0)*(it.valor_unitario||0))]),
+        headStyles:{fillColor:VERDE,textColor:[255,255,255],fontSize:8,fontStyle:"bold",cellPadding:4},
+        bodyStyles:{fontSize:9,textColor:PRETO,cellPadding:4},
+        alternateRowStyles:{fillColor:[248,250,252]},
+        columnStyles:{1:{cellWidth:22,halign:"center"},2:{cellWidth:22,halign:"center"},3:{cellWidth:24,halign:"center"},4:{cellWidth:30,halign:"right"}}
+    });
+    y=doc.lastAutoTable.finalY+8;
+    const totalR=itens.reduce((s,it)=>s+parseFloat(it.quantidade_retirada||0),0);
+    const totalV=itens.reduce((s,it)=>s+(parseFloat(it.quantidade_vendida||0)*(it.valor_unitario||0)),0);
+    const totalD=itens.reduce((s,it)=>s+parseFloat(it.quantidade_devolvida||0),0);
+    const colW=CONTENT_W/3;
+    doc.setFillColor(240,253,244); doc.roundedRect(MARGIN,y,CONTENT_W,26,2,2,"F");
+    doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(...CINZA);
+    doc.text("TOTAL RETIRADO",MARGIN+6,y+8); doc.text("TOTAL VENDIDO",MARGIN+colW+6,y+8); doc.text("TOTAL DEVOLVIDO",MARGIN+colW*2+6,y+8);
+    doc.setFontSize(13); doc.setTextColor(...AZUL); doc.text(String(totalR)+" itens",MARGIN+6,y+19);
+    doc.setTextColor(...VERDE); doc.text(brl(totalV),MARGIN+colW+6,y+19);
+    doc.setTextColor(...LARANJA); doc.text(String(totalD)+" itens",MARGIN+colW*2+6,y+19);
+    y+=36;
+    if (y<220) y=220;
+    doc.setDrawColor(...CINZA); doc.setLineWidth(0.3); doc.line(MARGIN,y,MARGIN+80,y);
+    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...CINZA);
+    doc.text("Assinatura do Responsável",MARGIN,y+5); doc.text(resp,MARGIN,y+10);
+    const PAGE_H=297;
+    doc.setFillColor(...VERDE); doc.rect(0,PAGE_H-14,PAGE_W,14,"F");
+    doc.setFontSize(7.5); doc.setFont("helvetica","normal"); doc.setTextColor(220,255,230);
+    doc.text(`${EMPRESA.nome}  ·  CNPJ ${EMPRESA.cnpj}`,PAGE_W/2,PAGE_H-8,{align:"center"});
+    doc.text(`${EMPRESA.end}  ·  ${EMPRESA.site}`,PAGE_W/2,PAGE_H-4,{align:"center"});
+    return doc;
+}
+
+function brl(v){ return parseFloat(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
+function fdata(d){ if(!d)return"—"; const p=d.split("-"); return p.length<3?d:`${p[2]}/${p[1]}/${p[0]}`; }
+function toast(msg){ const t=document.getElementById("pdv-toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),3000); }
+function carregarImagem(src){ return new Promise((ok,err)=>{ const i=new Image(); i.crossOrigin="anonymous"; i.onload=()=>{const c=document.createElement("canvas");c.width=i.width;c.height=i.height;c.getContext("2d").drawImage(i,0,0);ok(c.toDataURL("image/png"));}; i.onerror=err; i.src=src; }); }
+</script>
+</body>
+</html>

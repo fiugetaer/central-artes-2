@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="pagina-protegida" content="true">
+    <title>Orçamentos | Portal Comercial GACC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pdv-base.css">
+    <style>
+        .status-badge{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;}
+        .s-elaboracao{background:#eff6ff;color:#2563eb;}
+        .s-enviado{background:#fffbeb;color:#d97706;}
+        .s-aprovado{background:#f0fdf4;color:#16a34a;}
+        .s-rejeitado{background:#fef2f2;color:#dc2626;}
+        .s-cancelado{background:#f8fafc;color:#94a3b8;}
+        .filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+        .filtro-btn{padding:6px 14px;border-radius:999px;border:1px solid #e2e8f0;background:white;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;color:#64748b;}
+        .filtro-btn.ativo{background:#2563eb;color:white;border-color:#2563eb;}
+    </style>
+</head>
+<body>
+<aside class="pdv-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon"><svg viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <div class="brand-text"><h3>Portal Comercial</h3><span>GACC-AM</span></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="pdv-dashboard.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
+        <a href="pdv-orcamentos.html" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Orçamentos</span></a>
+        <a href="pdv-clientes.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Clientes</span></a>
+        <a href="pdv-produtos.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>Produtos</span></a>
+        <a href="pdv-vendas.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Vendas Externas</span><span class="nav-badge"></span></a>
+        <a href="#" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Histórico</span><span class="nav-badge">BREVE</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M15 3H19a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H15"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span>Central de Artes</span></a>
+    </div>
+</aside>
+<main class="pdv-main">
+    <div class="pdv-topbar">
+        <span class="topbar-label">Portal</span>
+        <div class="topbar-actions"><div class="avatar" id="userAvatar">AD</div></div>
+    </div>
+    <div class="pdv-content">
+        <div class="page-header">
+            <div class="page-header-left"><h1>Orçamentos</h1><p>Gerencie todos os orçamentos</p></div>
+            <a href="pdv-orcamento-editar.html?novo=1" class="btn-primary"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo orçamento</a>
+        </div>
+        <div class="table-card">
+            <div class="table-toolbar">
+                <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" id="buscaOrc" placeholder="Buscar por número ou cliente..." oninput="filtrar()">
+                    </div>
+                    <div class="filtros">
+                        <button class="filtro-btn ativo" onclick="setFiltro('todos',this)">Todos</button>
+                        <button class="filtro-btn" onclick="setFiltro('elaboracao',this)">Em elaboração</button>
+                        <button class="filtro-btn" onclick="setFiltro('enviado',this)">Enviado</button>
+                        <button class="filtro-btn" onclick="setFiltro('aprovado',this)">Aprovado</button>
+                        <button class="filtro-btn" onclick="setFiltro('rejeitado',this)">Rejeitado</button>
+                    </div>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Cliente</th>
+                        <th>Responsável</th>
+                        <th>Data</th>
+                        <th>Validade</th>
+                        <th>Status</th>
+                        <th style="text-align:right">Total</th>
+                        <th style="text-align:right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaOrc">
+                    <tr><td colspan="8"><div class="empty-state">Carregando...</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<div id="pdv-toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+const SL={elaboracao:"Em elaboração",enviado:"Enviado",aprovado:"Aprovado",rejeitado:"Rejeitado",cancelado:"Cancelado"};
+const SC={elaboracao:"s-elaboracao",enviado:"s-enviado",aprovado:"s-aprovado",rejeitado:"s-rejeitado",cancelado:"s-cancelado"};
+let todos=[], filtroAtual="todos";
+
+document.addEventListener("DOMContentLoaded", async()=>{
+    const sess=await supabaseClient.auth.getSession();
+    if(!sess.data.session){window.location.href="login.html";return;}
+    document.getElementById("userAvatar").textContent=sess.data.session.user.email.slice(0,2).toUpperCase();
+    await carregar();
+});
+
+async function carregar(){
+    const res=await supabaseClient.from("orcamentos").select("*,clientes(nome)").order("created_at",{ascending:false});
+    todos=res.data||[];
+    renderizar();
+}
+
+function setFiltro(f,btn){
+    filtroAtual=f;
+    document.querySelectorAll(".filtro-btn").forEach(b=>b.classList.remove("ativo"));
+    btn.classList.add("ativo");
+    renderizar();
+}
+
+function filtrar(){ renderizar(); }
+
+function renderizar(){
+    const busca=document.getElementById("buscaOrc").value.toLowerCase();
+    let lista=todos;
+    if(filtroAtual!=="todos") lista=lista.filter(o=>o.status===filtroAtual);
+    if(busca) lista=lista.filter(o=>(o.numero||"").toLowerCase().includes(busca)||(o.clientes?.nome||"").toLowerCase().includes(busca));
+    const tbody=document.getElementById("tabelaOrc");
+    if(!lista.length){tbody.innerHTML='<tr><td colspan="8"><div class="empty-state">Nenhum orçamento encontrado.</div></td></tr>';return;}
+    tbody.innerHTML=lista.map(o=>`<tr>
+        <td style="font-weight:600;color:#0f172a;">${o.numero}</td>
+        <td>${o.clientes?o.clientes.nome:"—"}</td>
+        <td style="color:#64748b;">${o.responsavel||"—"}</td>
+        <td style="color:#64748b;">${fdata(o.data)}</td>
+        <td style="color:#64748b;">${fdata(o.validade)}</td>
+        <td><span class="status-badge ${SC[o.status]||''}">${SL[o.status]||o.status}</span></td>
+        <td style="text-align:right;font-weight:600;">${brl(o.total)}</td>
+        <td><div class="td-acoes">
+            <a href="pdv-orcamento-editar.html?id=${o.id}" class="btn-edit" title="Editar"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></a>
+            <button class="btn-danger" onclick="excluir(${o.id},'${(o.numero||'').replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+        </div></td>
+    </tr>`).join("");
+}
+
+async function excluir(id,num){
+    if(!confirm(`Excluir o orçamento ${num}?`))return;
+    const res=await supabaseClient.from("orcamentos").delete().eq("id",id);
+    if(res.error){toast("Erro ao excluir.");return;}
+    toast("Orçamento excluído.");
+    carregar();
+}
+
+function brl(v){return parseFloat(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});}
+function fdata(d){if(!d)return"—";const p=d.split("-");return p.length<3?d:`${p[2]}/${p[1]}/${p[0]}`;}
+function toast(msg){const t=document.getElementById("pdv-toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),2500);}
+</script>
+</body>
+</html>

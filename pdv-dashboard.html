@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="pagina-protegida" content="true">
+    <title>Dashboard | Portal Comercial GACC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pdv-base.css">
+    <style>
+        .cards-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px; }
+        .cards-grid-2 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+        .metric-card { background:white; border:1px solid #e2e8f0; border-radius:12px; padding:20px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+        .metric-card-left small { font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.06em; display:block; margin-bottom:8px; }
+        .metric-card-left h2 { font-size:32px; font-weight:700; color:#0f172a; line-height:1; }
+        .metric-card-left h2.valor { font-size:22px; }
+        .metric-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .metric-icon svg { width:20px; height:20px; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+        .ic-blue { background:#eff6ff; } .ic-blue svg { stroke:#2563eb; }
+        .ic-green { background:#f0fdf4; } .ic-green svg { stroke:#16a34a; }
+        .ic-red { background:#fef2f2; } .ic-red svg { stroke:#dc2626; }
+        .ic-purple { background:#faf5ff; } .ic-purple svg { stroke:#9333ea; }
+        .ic-teal { background:#f0fdfa; } .ic-teal svg { stroke:#0d9488; }
+        .mini-card { background:white; border:1px solid #e2e8f0; border-radius:12px; padding:16px 20px; display:flex; align-items:center; gap:14px; }
+        .mini-card-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .mini-card-icon svg { width:20px; height:20px; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+        .mini-card-info small { font-size:11px; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:.05em; display:block; margin-bottom:3px; }
+        .mini-card-info strong { font-size:20px; font-weight:700; color:#0f172a; }
+        .recentes-card { background:white; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; }
+        .recentes-header { padding:18px 20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; justify-content:space-between; }
+        .recentes-header h3 { font-size:16px; font-weight:700; color:#0f172a; }
+        .orcamento-item { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid #f8fafc; transition:background .1s; cursor:pointer; text-decoration:none; color:inherit; }
+        .orcamento-item:last-child { border-bottom:none; }
+        .orcamento-item:hover { background:#fafafa; }
+        .orcamento-item-left strong { display:block; font-size:14px; font-weight:600; color:#0f172a; margin-bottom:2px; }
+        .orcamento-item-left span { font-size:12px; color:#94a3b8; }
+        .orcamento-item-right { display:flex; align-items:center; gap:12px; }
+        .status-badge { font-size:12px; font-weight:600; padding:4px 10px; border-radius:999px; }
+        .s-elaboracao { background:#eff6ff; color:#2563eb; }
+        .s-enviado    { background:#fffbeb; color:#d97706; }
+        .s-aprovado   { background:#f0fdf4; color:#16a34a; }
+        .s-rejeitado  { background:#fef2f2; color:#dc2626; }
+        .s-cancelado  { background:#f8fafc; color:#94a3b8; }
+        @media(max-width:1100px) { .cards-grid,.cards-grid-2 { grid-template-columns:1fr 1fr; } }
+        @media(max-width:600px)  { .cards-grid,.cards-grid-2 { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+<aside class="pdv-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon"><svg viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <div class="brand-text"><h3>Portal Comercial</h3><span>GACC-AM</span></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="pdv-dashboard.html" class="nav-item active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
+        <a href="pdv-orcamentos.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Orçamentos</span></a>
+        <a href="pdv-clientes.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span>Clientes</span></a>
+        <a href="pdv-produtos.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>Produtos</span></a>
+        <a href="pdv-vendas.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Vendas Externas</span><span class="nav-badge"></span></a>
+        <a href="#" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Histórico</span><span class="nav-badge">BREVE</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="dashboard.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M15 3H19a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H15"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span>Central de Artes</span></a>
+    </div>
+</aside>
+
+<main class="pdv-main">
+    <div class="pdv-topbar">
+        <span class="topbar-label">Portal</span>
+        <div class="topbar-actions"><div class="avatar" id="userAvatar">AD</div></div>
+    </div>
+    <div class="pdv-content">
+        <div class="page-header">
+            <div class="page-header-left"><h1>Dashboard</h1><p>Visão geral do portal comercial</p></div>
+            <a href="pdv-orcamento-editar.html?novo=1" class="btn-primary"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo orçamento</a>
+        </div>
+        <div class="cards-grid">
+            <div class="metric-card"><div class="metric-card-left"><small>Orçamentos</small><h2 id="totalOrcamentos">—</h2></div><div class="metric-icon ic-blue"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
+            <div class="metric-card"><div class="metric-card-left"><small>Aprovados</small><h2 id="totalAprovados">—</h2></div><div class="metric-icon ic-green"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+            <div class="metric-card"><div class="metric-card-left"><small>Rejeitados</small><h2 id="totalRejeitados">—</h2></div><div class="metric-icon ic-red"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div></div>
+            <div class="metric-card"><div class="metric-card-left"><small>Valor Orçado</small><h2 class="valor" id="valorOrcado">—</h2></div><div class="metric-icon ic-purple"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div>
+        </div>
+        <div class="cards-grid-2">
+            <div class="mini-card"><div class="mini-card-icon ic-teal"><svg viewBox="0 0 24 24" stroke="#0d9488"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="mini-card-info"><small>Clientes cadastrados</small><strong id="totalClientes">—</strong></div></div>
+            <div class="mini-card"><div class="mini-card-icon ic-blue"><svg viewBox="0 0 24 24" stroke="#2563eb"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><div class="mini-card-info"><small>Produtos ativos</small><strong id="totalProdutos">—</strong></div></div>
+            <div class="mini-card"><div class="mini-card-icon ic-green"><svg viewBox="0 0 24 24" stroke="#16a34a"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="mini-card-info"><small>Valor aprovado</small><strong id="valorAprovado">—</strong></div></div>
+        </div>
+        <div class="recentes-card">
+            <div class="recentes-header"><h3>Orçamentos recentes</h3><a href="pdv-orcamentos.html" class="btn-secondary" style="padding:7px 14px;font-size:13px;">Ver todos</a></div>
+            <div id="listaRecentes"><div style="padding:40px;text-align:center;color:#94a3b8;font-size:14px;">Carregando...</div></div>
+        </div>
+    </div>
+</main>
+<div id="pdv-toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+const STATUS_LABEL = {elaboracao:"Em elaboração",enviado:"Enviado",aprovado:"Aprovado",rejeitado:"Rejeitado",cancelado:"Cancelado"};
+const STATUS_CLASS = {elaboracao:"s-elaboracao",enviado:"s-enviado",aprovado:"s-aprovado",rejeitado:"s-rejeitado",cancelado:"s-cancelado"};
+document.addEventListener("DOMContentLoaded", async () => {
+    const sess = await supabaseClient.auth.getSession();
+    if (!sess.data.session) { window.location.href = "login.html"; return; }
+    document.getElementById("userAvatar").textContent = sess.data.session.user.email.slice(0,2).toUpperCase();
+    await Promise.all([carregarMetricas(), carregarRecentes()]);
+});
+async function carregarMetricas() {
+    const [resOrc, resCli, resProd] = await Promise.all([
+        supabaseClient.from("orcamentos").select("status,total"),
+        supabaseClient.from("clientes").select("id",{count:"exact"}).eq("ativo",true),
+        supabaseClient.from("produtos").select("id",{count:"exact"}).eq("ativo",true)
+    ]);
+    const orcs = resOrc.data || [];
+    setText("totalOrcamentos", orcs.length);
+    setText("totalAprovados",  orcs.filter(o=>o.status==="aprovado").length);
+    setText("totalRejeitados", orcs.filter(o=>o.status==="rejeitado").length);
+    setText("valorOrcado",     brl(orcs.reduce((s,o)=>s+(parseFloat(o.total)||0),0)));
+    setText("totalClientes",   resCli.count ?? 0);
+    setText("totalProdutos",   resProd.count ?? 0);
+    setText("valorAprovado",   brl(orcs.filter(o=>o.status==="aprovado").reduce((s,o)=>s+(parseFloat(o.total)||0),0)));
+}
+async function carregarRecentes() {
+    const res = await supabaseClient.from("orcamentos").select("*,clientes(nome)").order("created_at",{ascending:false}).limit(6);
+    const lista = document.getElementById("listaRecentes");
+    const orcs = res.data || [];
+    if (!orcs.length) { lista.innerHTML='<div style="padding:40px;text-align:center;color:#94a3b8;font-size:14px;">Nenhum orçamento criado ainda.</div>'; return; }
+    lista.innerHTML = orcs.map(o=>`
+        <a href="pdv-orcamento-editar.html?id=${o.id}" class="orcamento-item">
+            <div class="orcamento-item-left"><strong>Orçamento ${o.numero}</strong><span>${fdata(o.data)} · ${o.clientes?o.clientes.nome:"Sem cliente"}</span></div>
+            <div class="orcamento-item-right"><span class="status-badge ${STATUS_CLASS[o.status]||''}">${STATUS_LABEL[o.status]||o.status}</span><span style="font-size:14px;font-weight:600;">${brl(o.total)}</span></div>
+        </a>`).join("");
+}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function brl(v){return parseFloat(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});}
+function fdata(d){if(!d)return"—";const p=d.split("-");return p.length<3?d:`${p[2]}/${p[1]}/${p[0]}`;}
+</script>
+</body>
+</html>
