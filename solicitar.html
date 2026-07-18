@@ -1,86 +1,351 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar Arte | Central de Artes GACC</title>
+    <title>Solicitar Arte | GACC-AM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <link rel="stylesheet" href="style.css">
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #FFC107;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        /* ── HEADER ─── */
+        header {
+            background: #6B21A8;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-gacc h1 {
+            font-size: 26px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: -1px;
+        }
+
+        .logo-gacc h1 span { color: #FFC107; }
+
+        .logo-gacc p {
+            font-size: 12px;
+            color: rgba(255,255,255,.7);
+            font-weight: 600;
+        }
+
+        .voltar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 2px solid rgba(255,255,255,.3);
+            transition: all .2s;
+        }
+
+        .voltar-btn:hover {
+            background: rgba(255,255,255,.15);
+            border-color: rgba(255,255,255,.6);
+        }
+
+        /* ── HERO ─── */
+        .page-hero {
+            background: linear-gradient(135deg, #FF8C42 0%, #FF4444 60%, #E8173A 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .page-hero h2 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 900;
+            color: white;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .page-hero p {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255,255,255,.88);
+        }
+
+        /* ── CONTEÚDO ─── */
+        .form-section {
+            flex: 1;
+            padding: 32px 20px 60px;
+        }
+
+        .form-container {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        /* ── CARDS ─── */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(107,33,168,.1);
+            border: 2px solid transparent;
+            transition: border-color .2s;
+        }
+
+        .card:focus-within {
+            border-color: #6B21A8;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 900;
+            color: #6B21A8;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card h2::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(#FF8C42, #FF4444);
+            border-radius: 4px;
+        }
+
+        /* ── GRID ─── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* ── CAMPOS ─── */
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .campo:last-child { margin-bottom: 0; }
+
+        .campo label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #6B21A8;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .campo input,
+        .campo select,
+        .campo textarea {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            color: #1a1a2e;
+            background: #fafafa;
+            outline: none;
+            transition: border-color .2s, background .2s, box-shadow .2s;
+        }
+
+        .campo input:focus,
+        .campo select:focus,
+        .campo textarea:focus {
+            border-color: #6B21A8;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(107,33,168,.12);
+        }
+
+        .campo textarea { resize: vertical; min-height: 100px; }
+
+        /* ── ÁREA DE UPLOAD ─── */
+        #areaUpload {
+            border: 2.5px dashed #d1b3e8;
+            border-radius: 14px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #faf5ff;
+            transition: all .2s;
+        }
+
+        #areaUpload:hover {
+            border-color: #6B21A8;
+            background: #f3e8ff;
+        }
+
+        #uploadIcone { font-size: 32px; margin-bottom: 8px; }
+
+        #uploadTexto {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6B21A8;
+            line-height: 1.6;
+        }
+
+        #uploadTexto small {
+            font-size: 12px;
+            color: #9ca3af;
+            font-weight: 600;
+        }
+
+        #previewArquivo {
+            margin-top: 12px;
+        }
+
+        #previewArquivo img,
+        #previewArquivo video {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            object-fit: cover;
+        }
+
+        /* ── BOTÃO ENVIAR ─── */
+        .acoes {
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .btn-enviar-principal {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #6B21A8, #9333ea);
+            color: white;
+            border: none;
+            padding: 18px 56px;
+            border-radius: 999px;
+            font-size: 18px;
+            font-weight: 900;
+            font-family: 'Nunito', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            cursor: pointer;
+            transition: all .2s;
+            box-shadow: 0 8px 24px rgba(107,33,168,.35);
+        }
+
+        .btn-enviar-principal:hover {
+            background: linear-gradient(135deg, #581c87, #7e22ce);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(107,33,168,.45);
+        }
+
+        .btn-enviar-principal:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ── TOAST ─── */
+        #toast-form {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #6B21A8;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            opacity: 0;
+            pointer-events: none;
+            transition: all .25s;
+            z-index: 9999;
+            white-space: nowrap;
+        }
+
+        #toast-form.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── RESPONSIVO ─── */
+        @media (max-width: 768px) {
+            header { padding: 14px 20px; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .card { padding: 20px; }
+            .page-hero { padding: 28px 16px; }
+            .btn-enviar-principal { padding: 16px 36px; font-size: 16px; }
+        }
+    </style>
 </head>
-
 <body>
 
-<header class="topbar">
-
-    <a href="index.html" class="voltar">
-        ← Voltar
-    </a>
-
-    <div class="titulo-topo">
-        Central de Artes — GACC
+<!-- HEADER -->
+<header>
+    <div class="logo-gacc">
+        <h1>GACC<span>.</span>AM</h1>
+        <p>Portal de Solicitações</p>
     </div>
-
+    <a href="index.html" class="voltar-btn">← Voltar</a>
 </header>
 
-<section class="form-section">
+<!-- HERO TOPO -->
+<div class="page-hero">
+    <h2>Briefing da Solicitação</h2>
+    <p>Quanto mais claras forem as informações, melhor será o resultado da sua peça.</p>
+</div>
 
+<!-- FORMULÁRIO -->
+<section class="form-section">
     <div class="form-container">
 
-        <h1>Briefing da Solicitação</h1>
-
-        <p>
-            Quanto mais claras forem as informações, melhor será o resultado da sua peça.
-        </p>
-
         <!-- DADOS DO SOLICITANTE -->
-
         <div class="card">
-
             <h2>Dados do Solicitante</h2>
-
             <div class="grid-2">
-
                 <div class="campo">
-                    <label>Nome</label>
-                    <input type="text" id="nome">
+                    <label>Nome *</label>
+                    <input type="text" id="nome" placeholder="Seu nome completo">
                 </div>
-
                 <div class="campo">
-                    <label>Setor</label>
-                    <input type="text" id="setor">
+                    <label>Setor *</label>
+                    <input type="text" id="setor" placeholder="Ex.: Captação, Eventos">
                 </div>
-
                 <div class="campo">
                     <label>WhatsApp</label>
                     <input type="tel" id="whatsapp" placeholder="(92) 99999-9999">
                 </div>
-
                 <div class="campo">
                     <label>E-mail</label>
                     <input type="email" id="emailSolicitante" placeholder="email@gaccam.org.br">
                 </div>
-
             </div>
-
         </div>
 
-        <!-- SOBRE A ARTE -->
-
+        <!-- INFORMAÇÕES DA ARTE -->
         <div class="card">
-
             <h2>Informações da Arte</h2>
-
             <div class="grid-2">
-
                 <div class="campo">
-
-                    <label>Tipo da Peça</label>
-
+                    <label>Tipo da Peça *</label>
                     <select id="tipoPeca">
-                        <option>Selecione</option>
+                        <option value="Selecione">Selecione...</option>
                         <option>Post Instagram</option>
                         <option>Story Instagram</option>
                         <option>Carrossel</option>
@@ -90,248 +355,145 @@
                         <option>Vídeo</option>
                         <option>Apresentação</option>
                     </select>
-
                 </div>
-
                 <div class="campo">
                     <label>Campanha (Opcional)</label>
                     <input type="text" id="campanha" placeholder="Nome da campanha">
                 </div>
-
             </div>
-
             <div class="campo">
-
-                <label>Objetivo da Arte</label>
-
-                <textarea
-                    id="objetivo"
-                    rows="5"
-                    placeholder="O que você deseja comunicar?"
-                ></textarea>
-
+                <label>Objetivo da Arte *</label>
+                <textarea id="objetivo" placeholder="O que você deseja comunicar?"></textarea>
             </div>
-
             <div class="campo">
-
                 <label>Texto Obrigatório</label>
-
-                <textarea
-                    id="textoObrigatorio"
-                    rows="5"
-                    placeholder="Texto que deve aparecer na peça"
-                ></textarea>
-
+                <textarea id="textoObrigatorio" placeholder="Texto que deve aparecer na peça"></textarea>
             </div>
-
             <div class="campo">
-
                 <label>Público-Alvo</label>
-
-                <input
-                    type="text"
-                    id="publicoAlvo"
-                    placeholder="Ex.: Doadores, colaboradores, voluntários"
-                >
-
+                <input type="text" id="publicoAlvo" placeholder="Ex.: Doadores, colaboradores, voluntários">
             </div>
-
         </div>
 
         <!-- PRAZO -->
-
         <div class="card">
-
             <h2>Prazo</h2>
-
             <div class="grid-2">
-
                 <div class="campo">
-
-                    <label>Data Desejada</label>
-
-                    <input
-                        type="date"
-                        id="dataEntrega"
-                    >
-
+                    <label>Data Desejada *</label>
+                    <input type="date" id="dataEntrega">
                 </div>
-
                 <div class="campo">
-
                     <label>Prioridade</label>
-
                     <select id="prioridade">
                         <option>Baixa</option>
                         <option>Média</option>
                         <option>Alta</option>
                     </select>
-
                 </div>
-
             </div>
-
         </div>
 
         <!-- REFERÊNCIAS -->
-
         <div class="card">
-
             <h2>Referências</h2>
 
             <div class="campo">
-
-                <label>Enviar Arquivo de Referência</label>
-
-                <div id="areaUpload" style="
-                    border: 2px dashed #c8d8d6;
-                    border-radius: 14px;
-                    padding: 28px 20px;
-                    text-align: center;
-                    cursor: pointer;
-                    transition: border-color .2s, background .2s;
-                    background: #fafafa;
-                ">
-                    <div id="uploadIcone" style="font-size: 32px; margin-bottom: 8px;">📎</div>
-                    <div id="uploadTexto" style="color: #637381; font-size: 14px;">
+                <label>Arquivo de Referência</label>
+                <div id="areaUpload">
+                    <div id="uploadIcone">📎</div>
+                    <div id="uploadTexto">
                         Clique para selecionar ou arraste o arquivo aqui<br>
-                        <span style="font-size: 12px; color: #aaa;">Imagens (JPG, PNG, GIF) ou Vídeos (MP4, MOV) — máx. 50MB</span>
+                        <small>Imagens (JPG, PNG) ou Vídeos (MP4, MOV) — máx. 50MB</small>
                     </div>
-                    <input
-                        type="file"
-                        id="arquivoReferencia"
-                        accept="image/*,video/*"
-                        style="display:none;"
-                    >
+                    <input type="file" id="arquivoReferencia" accept="image/*,video/*" style="display:none">
                 </div>
-
-                <!-- Preview do arquivo selecionado -->
-                <div id="previewArquivo" style="display:none; margin-top: 12px;"></div>
-
+                <div id="previewArquivo" style="display:none"></div>
             </div>
 
             <div class="campo">
-
                 <label>Link de Referência</label>
-
-                <input
-                    type="url"
-                    id="linkReferencia"
-                    placeholder="https://"
-                >
-
+                <input type="url" id="linkReferencia" placeholder="https://">
             </div>
-
         </div>
 
         <!-- OBSERVAÇÕES -->
-
         <div class="card">
-
             <h2>Observações Finais</h2>
-
             <div class="campo">
-
-                <textarea
-                    id="observacoes"
-                    rows="6"
-                    placeholder="Informações adicionais"
-                ></textarea>
-
+                <textarea id="observacoes" rows="5" placeholder="Informações adicionais, cores preferidas, estilo desejado..."></textarea>
             </div>
-
         </div>
 
         <!-- BOTÃO -->
-
         <div class="acoes">
-
-            <button
-                type="button"
-                id="btnEnviar"
-                class="btn-primary"
-            >
-                Enviar Solicitação
+            <button type="button" id="btnEnviar" class="btn-enviar-principal">
+                🚀 Enviar Solicitação
             </button>
-
         </div>
 
     </div>
-
 </section>
+
+<div id="toast-form"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 <script src="script.js"></script>
 
 <script>
-// ── Lógica de upload visual (só no solicitar.html) ──
-
+// Upload visual
 const areaUpload   = document.getElementById("areaUpload");
 const inputArquivo = document.getElementById("arquivoReferencia");
 const previewEl    = document.getElementById("previewArquivo");
 
-// Clique na área abre o seletor de arquivo
 areaUpload.addEventListener("click", () => inputArquivo.click());
 
-// Arrasta arquivo para a área
-areaUpload.addEventListener("dragover", (e) => {
+areaUpload.addEventListener("dragover", e => {
     e.preventDefault();
-    areaUpload.style.borderColor = "#007c80";
-    areaUpload.style.background  = "#eaf4f2";
+    areaUpload.style.borderColor = "#6B21A8";
+    areaUpload.style.background  = "#f3e8ff";
 });
 
 areaUpload.addEventListener("dragleave", () => {
-    areaUpload.style.borderColor = "#c8d8d6";
-    areaUpload.style.background  = "#fafafa";
+    areaUpload.style.borderColor = "#d1b3e8";
+    areaUpload.style.background  = "#faf5ff";
 });
 
-areaUpload.addEventListener("drop", (e) => {
+areaUpload.addEventListener("drop", e => {
     e.preventDefault();
-    areaUpload.style.borderColor = "#c8d8d6";
-    areaUpload.style.background  = "#fafafa";
+    areaUpload.style.borderColor = "#d1b3e8";
+    areaUpload.style.background  = "#faf5ff";
     if (e.dataTransfer.files.length > 0) {
         inputArquivo.files = e.dataTransfer.files;
         mostrarPreview(e.dataTransfer.files[0]);
     }
 });
 
-// Arquivo selecionado pelo seletor
 inputArquivo.addEventListener("change", () => {
-    if (inputArquivo.files.length > 0) {
-        mostrarPreview(inputArquivo.files[0]);
-    }
+    if (inputArquivo.files.length > 0) mostrarPreview(inputArquivo.files[0]);
 });
 
 function mostrarPreview(arquivo) {
-    const nomeEl = document.getElementById("uploadTexto");
-    const iconeEl = document.getElementById("uploadIcone");
+    document.getElementById("uploadIcone").textContent = arquivo.type.startsWith("video/") ? "🎬" : "🖼️";
+    document.getElementById("uploadTexto").innerHTML =
+        `<strong style="color:#6B21A8">${arquivo.name}</strong><br>
+        <small>${(arquivo.size/1024/1024).toFixed(2)} MB · Clique para trocar</small>`;
 
-    // Atualiza o texto da área
-    iconeEl.textContent = arquivo.type.startsWith("video/") ? "🎬" : "🖼️";
-    nomeEl.innerHTML = `<strong style="color:#007c80;">${arquivo.name}</strong><br>
-        <span style="font-size:12px;color:#aaa;">${(arquivo.size / 1024 / 1024).toFixed(2)} MB · Clique para trocar</span>`;
-
-    // Mostra preview visual se for imagem
     previewEl.style.display = "block";
     previewEl.innerHTML = "";
 
     if (arquivo.type.startsWith("image/")) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-            previewEl.innerHTML = `<img src="${e.target.result}" style="
-                max-width:100%; max-height:200px; border-radius:12px;
-                border:1px solid #dce6e4; object-fit:cover;">`;
+        reader.onload = e => {
+            previewEl.innerHTML = `<img src="${e.target.result}">`;
         };
         reader.readAsDataURL(arquivo);
     } else if (arquivo.type.startsWith("video/")) {
         const url = URL.createObjectURL(arquivo);
-        previewEl.innerHTML = `<video src="${url}" controls style="
-            max-width:100%; max-height:200px; border-radius:12px;
-            border:1px solid #dce6e4;"></video>`;
+        previewEl.innerHTML = `<video src="${url}" controls></video>`;
     }
 }
 </script>
-
 </body>
 </html>
