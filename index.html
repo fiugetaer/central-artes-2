@@ -1,137 +1,247 @@
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Central de Artes - GACC</title>
+    <title>Portal de Solicitações | GACC-AM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <link rel="stylesheet" href="style.css">
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #FFC107;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        /* ── HEADER ─────────────────────────────── */
+        header {
+            background: #6B21A8;
+            padding: 18px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo-gacc h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .logo-gacc h1 span {
+            color: #FFC107;
+        }
+
+        .logo-gacc p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.75);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .btn-header {
+            padding: 14px 24px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            text-decoration: none;
+            transition: all .2s;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .btn-comercial {
+            background: #FF6B35;
+            color: white;
+        }
+
+        .btn-comercial:hover {
+            background: #e85a26;
+            transform: translateY(-2px);
+        }
+
+        .btn-admin {
+            background: #FF4444;
+            color: white;
+        }
+
+        .btn-admin:hover {
+            background: #e03333;
+            transform: translateY(-2px);
+        }
+
+        /* ── HERO ────────────────────────────────── */
+        .hero {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        /* Blob card com gradiente laranja→vermelho */
+        .blob-card {
+            position: relative;
+            background: linear-gradient(135deg, #FF8C42 0%, #FF4444 60%, #E8173A 100%);
+            border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+            padding: 70px 60px 80px;
+            text-align: center;
+            max-width: 700px;
+            width: 100%;
+            box-shadow:
+                0 30px 80px rgba(232, 23, 58, 0.35),
+                0 10px 30px rgba(0,0,0,.15);
+            animation: blobFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes blobFloat {
+            0%, 100% { border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%; }
+            33%       { border-radius: 50% 50% 60% 40% / 55% 45% 50% 50%; }
+            66%       { border-radius: 65% 35% 45% 55% / 40% 60% 55% 45%; }
+        }
+
+        .blob-card h2 {
+            font-size: clamp(42px, 7vw, 72px);
+            font-weight: 900;
+            color: white;
+            line-height: 1.05;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .blob-card .subtitulo {
+            font-size: clamp(16px, 2.5vw, 22px);
+            font-weight: 800;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .blob-card .descricao {
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: 600;
+            color: rgba(255,255,255,0.88);
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .btn-solicitar {
+            display: inline-block;
+            background: #6B21A8;
+            color: white;
+            text-decoration: none;
+            padding: 20px 50px;
+            border-radius: 999px;
+            font-size: clamp(16px, 2.5vw, 22px);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            transition: all .2s;
+            box-shadow: 0 8px 24px rgba(107, 33, 168, 0.4);
+        }
+
+        .btn-solicitar:hover {
+            background: #581c87;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 36px rgba(107, 33, 168, 0.5);
+        }
+
+        /* Bolinhas decorativas de fundo */
+        .deco {
+            position: fixed;
+            border-radius: 50%;
+            opacity: .18;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .deco-1 { width: 200px; height: 200px; background: #FF8C42; top: 10%; left: 5%; }
+        .deco-2 { width: 140px; height: 140px; background: #6B21A8; bottom: 15%; right: 8%; }
+        .deco-3 { width: 80px;  height: 80px;  background: #FF4444; top: 60%; left: 3%;  }
+        .deco-4 { width: 100px; height: 100px; background: #6B21A8; top: 15%; right: 5%; }
+
+        .hero { position: relative; z-index: 1; }
+
+        /* ── RESPONSIVO ──────────────────────────── */
+        @media (max-width: 768px) {
+            header { padding: 16px 20px; }
+            .logo-gacc h1 { font-size: 24px; }
+            .btn-header { padding: 10px 16px; font-size: 12px; }
+            .blob-card { padding: 50px 30px 60px; border-radius: 40% 60% 50% 50% / 50% 50% 55% 45%; }
+            .btn-solicitar { padding: 16px 36px; }
+        }
+
+        @media (max-width: 480px) {
+            .header-buttons { flex-direction: column; gap: 8px; }
+            .blob-card { padding: 40px 24px 50px; }
+        }
+    </style>
 </head>
-
 <body>
 
-    <header>
-        <div class="container navbar">
+<!-- Decorações de fundo -->
+<div class="deco deco-1"></div>
+<div class="deco deco-2"></div>
+<div class="deco deco-3"></div>
+<div class="deco deco-4"></div>
 
-            <div class="logo">
+<!-- HEADER -->
+<header>
+    <div class="logo-gacc">
+        <h1>GACC<span>.</span>AM</h1>
+        <p>Grupo de Apoio à Criança com Câncer do Amazonas</p>
+    </div>
 
-                <div style="background-image:url('https://doegacc.org.br/wp-content/uploads/2019/12/logo-gacc@1x.png');background-size:contain;background-repeat:no-repeat;width:250px;height:90px;"></div>
+    <div class="header-buttons">
+        <a href="pdv.html" class="btn-header btn-comercial">Painel Comercial</a>
+        <a href="login.html" class="btn-header btn-admin">Painel Administrativo</a>
+    </div>
+</header>
 
-                <div>
-                    <h3></h3>
-                    <span></span>
-                </div>
+<!-- HERO -->
+<section class="hero">
+    <div class="blob-card">
+        <h2>Portal de<br>Solicitações</h2>
+        <p class="subtitulo">Conte pra gente o que você precisa!</p>
+        <p class="descricao">
+            Preencha as informações abaixo e o setor de<br>
+            Marketing dará vida à sua ideia.
+        </p>
+        <a href="solicitar.html" class="btn-solicitar">Solicite uma Arte</a>
+    </div>
+</section>
 
-            </div>
-
-            <div class="menu">
-                <a href="#"></a>
-
-                <a href="solicitar.html" class="btn-primary large">
-    Solicitar uma arte → </a>
-                </a>
-            </div>
-
-        </div>
-    </header>
-
-    <section class="hero">
-
-        <div class="container hero-grid">
-
-            <div class="hero-left">
-
-                <div class="badge">
-                    <span>Bem-vindo à Central de Artes do GACC Amazonas</span>
-                </div>
-
-                <h1>
-                    Peça sua arte
-                    <span>com clareza e agilidade.</span>
-                </h1>
-
-                <p>
-                    Preencha o formulário com as informações da sua solicitação para que possamos atendê-lo da melhor forma.
-
-                <div class="buttons">
-
-                    <a href="solicitar.html" class="btn-primary large">
-                        Solicitar uma arte →
-                    </a>
-
-                    <a href="login.html" class="btn-secondary large">
-                        Acessar painel
-                    </a>
-
-                </div>
-
-                <div class="features">
-
-                    <span></span>
-
-                    <span></span>
-
-                    <span></span>
-
-                </div>
-
-            </div>
-
-            <div class="hero-right">
-
-                <div class="status-card">
-                    <small>NOVA</small>
-                    <h2 id="homeNovas">0</h2>
-
-                    <div class="progress">
-                        <div class="bar"></div>
-                    </div>
-                </div>
-
-                <div class="status-card">
-                    <small>EM CRIAÇÃO</small>
-                   <h2 id="homeCriacao">0</h2>
-
-                    <div class="progress">
-                        <div class="bar"></div>
-                    </div>
-                </div>
-
-                <div class="status-card">
-                    <small>EM ANÁLISE</small>
-                    <h2 id="homeAnalise">0</h2>
-
-                    <div class="progress">
-                        <div class="bar"></div>
-                    </div>
-                </div>
-
-                <div class="status-card">
-                    <small>ENTREGUE</small>
-                    <h2 id="homeEntregue">0</h2>
-
-                    <div class="progress">
-                        <div class="bar full"></div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="supabase.js"></script>
+<script>
+// Mostra toast de confirmação se vier de um envio
+(async () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("enviado") === "true") {
+        const toast = document.createElement("div");
+        toast.textContent = "✅ Solicitação enviada com sucesso!";
+        toast.style.cssText = "position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#6B21A8;color:white;padding:14px 28px;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:700;font-size:15px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.2);";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+        window.history.replaceState({}, "", window.location.pathname);
+    }
+})();
+</script>
 
-<script src="script.js"></script>
 </body>
-
-</a>
-
 </html>
