@@ -19,88 +19,10 @@
         }
 
         /* ── HEADER ─────────────────────────────── */
-        header {
-            background: #6B21A8;
-            padding: 14px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            position: sticky;
-            top: 0;
-            z-index: 200;
-            flex-wrap: wrap;
-        }
-
-        .logo-gacc h1 {
-            font-size: 22px;
-            font-weight: 900;
-            color: white;
-            letter-spacing: -1px;
-        }
-
-        .logo-gacc h1 span { color: #FFC107; }
-
-        .logo-gacc p {
-            font-size: 11px;
-            color: rgba(255,255,255,.65);
-            font-weight: 700;
-        }
-
-        .header-nav {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .nav-link {
-            color: rgba(255,255,255,.7);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 7px 14px;
-            border-radius: 999px;
-            transition: all .2s;
-            white-space: nowrap;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background: rgba(255,255,255,.18);
-            color: white;
-        }
-
-        .btn-nova {
-            background: linear-gradient(135deg, #FF8C42, #FF4444);
-            color: white;
-            text-decoration: none;
-            padding: 8px 18px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 800;
-            transition: all .2s;
-            white-space: nowrap;
-            border: none;
-            cursor: pointer;
-            font-family: 'Nunito', sans-serif;
-        }
-
-        .btn-nova:hover { opacity: .9; transform: translateY(-1px); }
-
-        .btn-sair {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,.55);
-            font-size: 13px;
-            font-weight: 700;
-            padding: 7px 12px;
-            border-radius: 999px;
-            cursor: pointer;
-            transition: all .2s;
-            font-family: 'Nunito', sans-serif;
-        }
-
-        .btn-sair:hover { background: rgba(255,0,0,.2); color: white; }
+       <header>
+ <div class="logo-gacc">
+    <img src="logo-gacc-branca.png" alt="GACC-AM" style="height: 100px; object-fit: contain;">
+</div>
 
         /* ── BOARD WRAPPER ───────────────────────── */
         .board-wrapper {
