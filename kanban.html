@@ -19,7 +19,7 @@
         }
 
         /* ── HEADER ─────────────────────────────── */
-      header {
+     header {
             background: #6B21A8;
             padding: 14px 28px;
             display: flex;
@@ -32,9 +32,20 @@
             flex-wrap: wrap;
         }
 
- <div class="logo-gacc">
-    <img src="logo-gacc-branca.png" alt="GACC-AM" style="height: 100px; object-fit: contain;">
-</div>
+        .logo-gacc h1 {
+            font-size: 22px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: -1px;
+        }
+
+        .logo-gacc h1 span { color: #FFC107; }
+
+        .logo-gacc p {
+            font-size: 11px;
+            color: rgba(255,255,255,.65);
+            font-weight: 700;
+        }
 
         .header-nav {
             display: flex;
@@ -90,6 +101,7 @@
         }
 
         .btn-sair:hover { background: rgba(255,0,0,.2); color: white; }
+
 
         /* ── BOARD WRAPPER ───────────────────────── */
         .board-wrapper {
@@ -593,10 +605,10 @@
 
 <!-- HEADER -->
 <header>
-    <div class="logo-gacc">
-        <h1>GACC<span>.</span>AM</h1>
-        <p>Fluxo de Demandas</p>
-    </div>
+ <div class="logo-gacc">
+    <img src="logo-gacc-branca.png" alt="GACC-AM" style="height: 100px; object-fit: contain;">
+</div>
+
     <nav class="header-nav">
         <a href="index.html"     class="nav-link">Início</a>
         <a href="solicitar.html" class="nav-link">Solicitar</a>
